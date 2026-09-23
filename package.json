@@ -1,0 +1,16 @@
+{
+  "name": "pacecar-demo",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install && npm install --prefix client && npm install --prefix server",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "test": "npm test --prefix server",
+    "start": "npm start --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "playwright-core": "^1.61.1",
+    "prettier": "^3.9.5"
+  }
+}

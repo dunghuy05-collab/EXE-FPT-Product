@@ -1,0 +1,37 @@
+const carNames = ['Toyota Vios 2022','Honda City 2021','Mazda CX-5 2022','Toyota Fortuner 2020','Kia Carnival 2023','VinFast Lux A2.0','Hyundai Accent 2022','Mitsubishi Xpander 2021','Ford Everest 2022','Toyota Camry 2021'];
+const locations = ['Hà Đông, Hà Nội','Hòa Lạc, Hà Nội','Cầu Giấy, Hà Nội','Mỹ Đình, Hà Nội','Nội thành Hà Nội'];
+const images = [
+ 'https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=1200&q=80',
+ 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80',
+ 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80',
+ 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1200&q=80',
+ 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1200&q=80'
+];
+export const seed = {
+ users: [
+  {id:1,name:'Nguyễn Minh An',email:'renter@pacecar.vn',password:'123456',role:'renter',phone:'0901234567',verified:true,trustScore:88,riskLevel:'Low'},
+  {id:2,name:'Trần Thu Hà',email:'ha@pacecar.vn',password:'123456',role:'renter',phone:'0912345678',verified:true,trustScore:76,riskLevel:'Medium'},
+  {id:3,name:'Lê Hoàng Nam',email:'nam@pacecar.vn',password:'123456',role:'renter',phone:'0987654321',verified:false,trustScore:48,riskLevel:'High'},
+  {id:4,name:'Phạm Đức Long',email:'owner@pacecar.vn',password:'123456',role:'owner',phone:'0908888888',verified:true,trustScore:94,riskLevel:'Low'},
+  {id:5,name:'Vũ Thanh Tùng',email:'tung@pacecar.vn',password:'123456',role:'owner',phone:'0933333333',verified:true,trustScore:86,riskLevel:'Low'},
+  {id:6,name:'Đỗ Mai Linh',email:'linh@pacecar.vn',password:'123456',role:'owner',phone:'0966666666',verified:true,trustScore:91,riskLevel:'Low'},
+  {id:7,name:'Quản trị PaceCar',email:'admin@pacecar.vn',password:'123456',role:'admin',phone:'19001000',verified:true,trustScore:100,riskLevel:'Low'}
+ ],
+ cars: carNames.map((name,i)=>({id:i+1,ownerId:4+(i%3),name,brand:name.split(' ')[0],model:name.split(' ').slice(1,-1).join(' '),year:Number(name.match(/\d{4}/)?.[0]||2022),location:locations[i%5],seats:i%3===0?7:5,transmission:i%4===0?'Số sàn':'Tự động',fuel:i===5?'Điện':'Xăng',type:i%3===0?'SUV':'Sedan',pricePerDay:650000+i*90000,deposit:5000000+i*500000,withDriverAvailable:i%2===0,selfDriveAvailable:true,imageUrl:images[i%5],verified:true,insuranceIncluded:i!==8,gpsEnabled:true,rating:Number((4.6+(i%4)*.1).toFixed(1)),totalTrips:12+i*7,description:'Xe được bảo dưỡng định kỳ, nội thất sạch sẽ và đã xác thực bởi PaceCar.'})),
+ bookings: [
+  {id:1,renterId:1,ownerId:4,carId:1,startDate:'2026-07-14',endDate:'2026-07-16',pickupLocation:'Hà Đông',returnLocation:'Hà Đông',driverOption:'self',status:'Pending',totalPrice:1820000,deposit:5000000,platformFee:195000,riskLevel:'Low',createdAt:'2026-07-10'},
+  {id:2,renterId:2,ownerId:4,carId:4,startDate:'2026-07-18',endDate:'2026-07-21',pickupLocation:'Cầu Giấy',returnLocation:'Cầu Giấy',driverOption:'driver',status:'Accepted',totalPrice:3680000,deposit:6500000,platformFee:276000,riskLevel:'Medium',createdAt:'2026-07-09'},
+  {id:3,renterId:1,ownerId:5,carId:2,startDate:'2026-06-20',endDate:'2026-06-22',pickupLocation:'Mỹ Đình',returnLocation:'Mỹ Đình',driverOption:'self',status:'Completed',totalPrice:2050000,deposit:5500000,platformFee:220000,riskLevel:'Low',createdAt:'2026-06-18'},
+  {id:4,renterId:3,ownerId:4,carId:7,startDate:'2026-07-20',endDate:'2026-07-30',pickupLocation:'Hòa Lạc',returnLocation:'Hòa Lạc',driverOption:'self',status:'Dispute',totalPrice:12500000,deposit:8000000,platformFee:900000,riskLevel:'High',createdAt:'2026-07-08'},
+  {id:5,renterId:2,ownerId:5,carId:5,startDate:'2026-05-10',endDate:'2026-05-12',pickupLocation:'Cầu Giấy',returnLocation:'Cầu Giấy',driverOption:'driver',status:'Rejected',totalPrice:2800000,deposit:7000000,platformFee:300000,riskLevel:'Medium',createdAt:'2026-05-08'},
+  {id:6,renterId:1,ownerId:6,carId:6,startDate:'2026-07-11',endDate:'2026-07-13',pickupLocation:'Nội thành Hà Nội',returnLocation:'Nội thành Hà Nội',driverOption:'self',status:'Ongoing',totalPrice:2600000,deposit:7500000,platformFee:260000,riskLevel:'Low',createdAt:'2026-07-07'},
+  {id:7,renterId:2,ownerId:6,carId:9,startDate:'2026-04-01',endDate:'2026-04-04',pickupLocation:'Mỹ Đình',returnLocation:'Mỹ Đình',driverOption:'self',status:'Completed',totalPrice:4200000,deposit:9000000,platformFee:380000,riskLevel:'Medium',createdAt:'2026-03-28'},
+  {id:8,renterId:3,ownerId:5,carId:8,startDate:'2026-07-25',endDate:'2026-07-27',pickupLocation:'Hà Đông',returnLocation:'Hà Đông',driverOption:'self',status:'Pending',totalPrice:2800000,deposit:8500000,platformFee:270000,riskLevel:'High',createdAt:'2026-07-10'}
+ ],
+ contracts: [1,2,3].map((bookingId,i)=>({id:i+1,bookingId,contractNumber:`PC-2026-00${i+1}`,status:i===0?'Draft':'Signed',terms:'Hai bên cam kết tuân thủ quy định giao nhận, bảo quản xe và bồi thường theo bằng chứng.',renterSigned:i>0,ownerSigned:i>0,createdAt:'2026-07-10'})),
+ evidence: [1,3,4].map((bookingId,i)=>({id:i+1,bookingId,checkinPhotos:[],checkoutPhotos:[],fuelBefore:80,fuelAfter:65,odometerBefore:24000+i*1000,odometerAfter:24230+i*1000,notes:'Thân xe có một vết xước nhỏ đã ghi nhận.',status:i===0?'Pending':'Complete'})),
+ disputes: [
+  {id:1,bookingId:4,reason:'New scratch',description:'Phát hiện vết xước mới ở cửa sau.',status:'Under review',evidence:[],decision:'',createdAt:'2026-07-10',resolvedAt:null},
+  {id:2,bookingId:7,reason:'Fuel difference',description:'Mức nhiên liệu thấp hơn khi giao xe.',status:'Resolved',evidence:[],decision:'Khấu trừ 350.000đ chi phí nhiên liệu.',createdAt:'2026-04-05',resolvedAt:'2026-04-07'}
+ ]
+};
