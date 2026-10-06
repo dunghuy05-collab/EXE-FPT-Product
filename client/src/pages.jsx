@@ -3013,7 +3013,7 @@ function LegacyBookingV2() {
                     }
                   />
                 </Field>
-                <Field label="Địa điểm nhận">
+                <Field label="Địa điểm nhận xe">
                   <input
                     className="input"
                     value={form.pickupLocation}
@@ -3022,7 +3022,7 @@ function LegacyBookingV2() {
                     }
                   />
                 </Field>
-                <Field label="Địa điểm trả">
+                <Field label="Địa điểm trả xe">
                   <input
                     className="input"
                     value={form.returnLocation}
@@ -3034,7 +3034,7 @@ function LegacyBookingV2() {
               </div>
               {!validStep1 && (
                 <p className="mt-4 text-sm text-red-600">
-                  Ngày trả phải sau ngày nhận và địa điểm không được để trống.
+                  Ngày trả phải sau ngày nhận; địa điểm nhận và trả xe không được để trống.
                 </p>
               )}
               <div className="mt-5 grid grid-cols-2 gap-3">

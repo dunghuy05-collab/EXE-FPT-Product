@@ -43,7 +43,7 @@ Các tài khoản trên là dữ liệu seed dành cho demo. Khi đăng nhập, 
 
 ## Tính năng
 
-- Landing page PaceCar với tìm kiếm theo địa điểm, ngày nhận và ngày trả
+- Landing page PaceCar với tìm kiếm theo địa điểm nhận xe, ngày nhận và ngày trả
 - Marketplace chỉ trả về xe `Published` và còn trống trong thời gian đã chọn
 - Bộ lọc theo loại xe, hộp số, nhiên liệu, số chỗ, khoảng giá, tự lái/có tài xế, giao tận nơi và đặt xe nhanh
 - Sắp xếp theo đề xuất, giá hoặc đánh giá; bộ lọc được giữ trên URL để có thể tải lại/chia sẻ
@@ -84,7 +84,7 @@ Trang `/cars` sử dụng API `GET /api/search/cars`. Các tiêu chí đang đư
 
 | Nhóm       | Tiêu chí                                      |
 | ---------- | --------------------------------------------- |
-| Hành trình | Địa điểm, ngày nhận, ngày trả                 |
+| Hành trình | Địa điểm nhận xe, ngày nhận, ngày trả         |
 | Xe         | Loại xe, hộp số, nhiên liệu, số chỗ           |
 | Giá        | Giá tối thiểu, giá tối đa                     |
 | Dịch vụ    | Tự lái, có tài xế, giao tận nơi, đặt xe nhanh |

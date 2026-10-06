@@ -102,7 +102,7 @@ export default function SearchBar({ compact = false }) {
         <label className="relative col-span-2 lg:col-span-1">
           <span className="label">
             <MapPin className="mr-1 inline" size={16} />
-            Địa điểm
+            Địa điểm nhận xe
           </span>
           <select
             className="input"
