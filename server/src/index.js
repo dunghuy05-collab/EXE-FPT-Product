@@ -10,7 +10,16 @@ import crypto from "node:crypto";
 import { read, write } from "./data/store.js";
 const app = express();
 app.set("trust proxy", process.env.TRUST_PROXY || "loopback");
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        imgSrc: ["'self'", "data:", "https:"],
+      },
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
 app.use(
   cors({
     origin: (process.env.CLIENT_ORIGIN || "http://localhost:5173").split(","),
@@ -18,9 +27,13 @@ app.use(
 );
 app.use(express.json({ limit: "2mb" }));
 const appDir = path.dirname(fileURLToPath(import.meta.url));
-const uploadDir = path.resolve(appDir, "../uploads/cars");
-const documentDir = path.resolve(appDir, "../uploads/documents");
-const evidenceDir = path.resolve(appDir, "../uploads/evidence");
+const clientDistDir = path.resolve(appDir, "../../client/dist");
+const uploadRoot = process.env.PACECAR_UPLOAD_DIR
+  ? path.resolve(process.env.PACECAR_UPLOAD_DIR)
+  : path.resolve(appDir, "../uploads");
+const uploadDir = path.join(uploadRoot, "cars");
+const documentDir = path.join(uploadRoot, "documents");
+const evidenceDir = path.join(uploadRoot, "evidence");
 fs.mkdirSync(uploadDir, { recursive: true });
 fs.mkdirSync(documentDir, { recursive: true });
 fs.mkdirSync(evidenceDir, { recursive: true });
@@ -2888,6 +2901,18 @@ app.get("/api/dashboard/admin", requireRole(["admin"]), (q, s) => {
     },
   });
 });
+if (fs.existsSync(clientDistDir)) {
+  app.use(
+    express.static(clientDistDir, {
+      index: false,
+      maxAge: process.env.NODE_ENV === "production" ? "1h" : 0,
+    }),
+  );
+  app.get("/{*path}", (q, s, next) => {
+    if (q.path.startsWith("/api/")) return next();
+    s.sendFile(path.join(clientDistDir, "index.html"));
+  });
+}
 app.use((e, q, s, n) => {
   if (e instanceof SyntaxError && e.status === 400 && "body" in e)
     return s.status(400).json({ message: "Dữ liệu JSON không hợp lệ" });

@@ -192,7 +192,23 @@ npm run build
 
 Build được tạo tại `client/dist`. Frontend gọi API bằng đường dẫn tương đối `/api`; khi deploy cần cấu hình reverse proxy cùng origin hoặc thay bằng cấu hình API endpoint phù hợp. Ảnh seed lấy từ Unsplash nên cần kết nối mạng để hiển thị.
 
-Backend production có thể chạy riêng bằng:
+## Deploy lên Render
+
+Repository có sẵn Blueprint [`render.yaml`](./render.yaml) để build frontend và chạy toàn bộ ứng dụng bằng một Render Web Service. Express phục vụ cả REST API tại `/api` và bản build React tại cùng domain.
+
+1. Đăng nhập Render, chọn **New > Blueprint**.
+2. Kết nối repository GitHub này và chọn nhánh `main`.
+3. Xác nhận Blueprint. Render sẽ tạo service `pacecar` ở region Singapore, build bằng `npm run render-build`, chạy bằng `npm start` và kiểm tra `/api/health`.
+4. Khi deploy hoàn tất, mở URL `https://pacecar-....onrender.com`. Mỗi lần push tiếp theo vào `main` sẽ tự động deploy lại.
+
+Blueprint mặc định dùng gói `free`. Filesystem của gói này là tạm thời, vì vậy booking, session và ảnh upload có thể trở về dữ liệu seed sau khi service restart/redeploy. Nếu cần lưu lại dữ liệu demo:
+
+- Đổi service sang gói trả phí và gắn persistent disk tại `/var/data`.
+- Đặt `PACECAR_DB_FILE=/var/data/pacecar-db.json`.
+- Đặt `PACECAR_UPLOAD_DIR=/var/data/uploads`.
+- Giữ service ở một instance; với production thực tế nên chuyển sang PostgreSQL và object storage.
+
+Backend production cũng có thể chạy riêng bằng:
 
 ```powershell
 npm start
