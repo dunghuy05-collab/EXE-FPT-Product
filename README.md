@@ -43,7 +43,7 @@ Các tài khoản trên là dữ liệu seed dành cho demo. Khi đăng nhập, 
 
 ## Tính năng
 
-- Landing page PaceCar với tìm kiếm theo địa điểm nhận xe, ngày nhận và ngày trả
+- Landing page PaceCar với tìm kiếm theo địa điểm nhận xe, điểm đến dự kiến, ngày và giờ nhận/trả
 - Marketplace chỉ trả về xe `Published` và còn trống trong thời gian đã chọn
 - Bộ lọc theo loại xe, hộp số, nhiên liệu, số chỗ, khoảng giá, tự lái/có tài xế, giao tận nơi và đặt xe nhanh
 - Sắp xếp theo đề xuất, giá hoặc đánh giá; bộ lọc được giữ trên URL để có thể tải lại/chia sẻ
@@ -51,7 +51,9 @@ Các tài khoản trên là dữ liệu seed dành cho demo. Khi đăng nhập, 
 - Danh sách yêu thích được lưu theo tài khoản qua backend
 - Chương trình ưu đãi và mã giảm giá được kiểm tra phía server
 - Báo giá có thời hạn, có phiên bản chính sách và breakdown đầy đủ do backend tính
+- Hỗ trợ thuê trong ngày; khoảng 06:00–22:00 được hiển thị là 16 giờ và tính tối thiểu 1 ngày
 - Tạo booking an toàn từ `quoteId`, kiểm tra lại lịch trống và chống tạo trùng bằng `Idempotency-Key`
+- Thanh toán tiền cọc mô phỏng có trạng thái, thời điểm, thông báo và audit log để kiểm thử trọn luồng
 - Consent được lưu cùng phiên bản chính sách; timestamp chấp thuận do backend tạo
 - Giao xe tận nơi với mức phí do chủ xe cấu hình
 - Hình thức có tài xế có line item phí riêng trong báo giá
@@ -226,7 +228,7 @@ Smoke test khởi động API trên database tạm, kiểm tra authorization, qu
 
 ## Giới hạn của bản demo
 
-- Chưa tích hợp cổng thanh toán, webhook ngân hàng hay quy trình hoàn tiền thật.
+- Bước thanh toán hiện chỉ là mô phỏng để kiểm thử hành trình; chưa tích hợp cổng thanh toán, webhook ngân hàng hay quy trình hoàn tiền thật.
 - Tìm kiếm địa điểm là so khớp chuỗi; chưa dùng geocoding, bản đồ hoặc khoảng cách GPS thực tế.
 - Phí giao tận nơi là mức cố định do chủ xe nhập, chưa tính theo số km.
 - JSON database và thư mục upload cục bộ chỉ phù hợp một instance demo.

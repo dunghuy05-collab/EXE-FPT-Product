@@ -32,7 +32,7 @@ export async function api(path, options = {}) {
     });
   } catch {
     throw new Error(
-      "Không kết nối được backend. Hãy chạy dự án bằng npm run dev tại thư mục gốc.",
+      "Dịch vụ đang tạm gián đoạn. Vui lòng thử lại sau ít phút.",
     );
   }
   if (!r.ok) {
@@ -74,3 +74,12 @@ export const money = (n) =>
   }).format(n || 0);
 export const date = (v) =>
   v ? new Intl.DateTimeFormat("vi-VN").format(new Date(v)) : "";
+export const dateTime = (v) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(v || "")
+    ? date(v)
+    : v
+      ? new Intl.DateTimeFormat("vi-VN", {
+          dateStyle: "short",
+          timeStyle: "short",
+        }).format(new Date(v))
+      : "";

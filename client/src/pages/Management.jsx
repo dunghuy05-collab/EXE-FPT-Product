@@ -10,9 +10,10 @@ import {
   Save,
   Star,
   User,
+  Wallet,
 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
-import { api, date, money } from "../services/api";
+import { api, dateTime, money } from "../services/api";
 import {
   Button,
   CarCard,
@@ -56,6 +57,7 @@ export function MyBookings() {
     [reviewing, setReviewing] = useState(null),
     [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" }),
     [reviewingBusy, setReviewingBusy] = useState(false),
+    [payingId, setPayingId] = useState(null),
     [reviewedIds, setReviewedIds] = useState(() => new Set());
   const load = () => {
     setError("");
@@ -126,6 +128,21 @@ export function MyBookings() {
       setReviewingBusy(false);
     }
   }
+  async function payDeposit(booking) {
+    setPayingId(booking.id);
+    try {
+      await api(`/bookings/${booking.id}/payment`, {
+        method: "POST",
+        body: JSON.stringify({ method: "demo" }),
+      });
+      toast.success("Đã ghi nhận thanh toán tiền cọc (mô phỏng)");
+      load();
+    } catch (paymentError) {
+      toast.error(paymentError.message);
+    } finally {
+      setPayingId(null);
+    }
+  }
   if (error) return <ErrorState message={error} onRetry={load} />;
   if (!bookings) return <PageLoading />;
   const actions = (b) =>
@@ -141,12 +158,23 @@ export function MyBookings() {
           Từ chối
         </Button>
       </>
+    ) : user.role === "owner" && b.status === "Check-out Review" ? (
+      <Button onClick={() => setDecision({ id: b.id, status: "Completed" })}>
+        <CheckCircle2 size={16} /> Hoàn tất chuyến
+      </Button>
     ) : user.role === "renter" && b.status === "Pending" ? (
       <Button
         variant="danger"
         onClick={() => setDecision({ id: b.id, status: "Rejected" })}
       >
         Hủy yêu cầu
+      </Button>
+    ) : user.role === "renter" &&
+      ["Accepted", "Deposit Required"].includes(b.status) &&
+      b.paymentStatus !== "Paid" ? (
+      <Button disabled={payingId === b.id} onClick={() => payDeposit(b)}>
+        <Wallet size={16} />
+        {payingId === b.id ? "Đang xử lý..." : "Thanh toán cọc (demo)"}
       </Button>
     ) : null;
   return (
@@ -199,9 +227,19 @@ export function MyBookings() {
                 </div>
                 <p className="mt-2 text-sm text-slate-500">
                   <CalendarDays className="mr-1 inline" size={15} />
-                  {date(b.startDate)} – {date(b.endDate)} ·{" "}
+                  {dateTime(b.startDate)} – {dateTime(b.endDate)} ·{" "}
                   {money(b.totalPrice)}
                 </p>
+                {b.destination && (
+                  <p className="mt-1 text-sm text-slate-500">
+                    Điểm đến dự kiến: {b.destination}
+                  </p>
+                )}
+                {b.paymentStatus === "Paid" && (
+                  <p className="mt-1 text-xs font-bold text-emerald-600">
+                    ✓ Đã thanh toán tiền cọc (mô phỏng)
+                  </p>
+                )}
                 <div className="mt-2 flex gap-2">
                   {user.role === "owner" && (
                     <>

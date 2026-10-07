@@ -132,10 +132,150 @@ try {
   });
   assert.equal(invalidQuote.status, 400);
 
+  const invalidTimeQuote = await request("/quotes", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({
+      carId: 1,
+      startDate: "2027-06-10",
+      startTime: "26:90",
+      endDate: "2027-06-12",
+      endTime: "20:00",
+      driverOption: "self",
+      pickupOption: "pickup",
+    }),
+  });
+  assert.equal(invalidTimeQuote.status, 400);
+
+  const invalidCalendarQuote = await request("/quotes", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({
+      carId: 1,
+      startDate: "2027-02-30",
+      startTime: "08:00",
+      endDate: "2027-03-02",
+      endTime: "20:00",
+      driverOption: "self",
+      pickupOption: "pickup",
+    }),
+  });
+  assert.equal(invalidCalendarQuote.status, 400);
+
+  const pastSearch = await request(
+    "/search/cars?startDate=2020-01-01&startTime=08%3A00&endDate=2020-01-02&endTime=20%3A00",
+  );
+  assert.equal(pastSearch.status, 400);
+
+  const sameDaySearch = await request(
+    "/search/cars?location=H%C3%A0%20N%E1%BB%99i&startDate=2027-09-24&startTime=06%3A00&endDate=2027-09-24&endTime=22%3A00&driverOption=self",
+  );
+  assert.equal(sameDaySearch.status, 200, JSON.stringify(sameDaySearch.body));
+  assert.ok(sameDaySearch.body.items.length > 0);
+
+  const sameDayQuote = await request("/quotes", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({
+      carId: 2,
+      startDate: "2027-09-24",
+      startTime: "06:00",
+      endDate: "2027-09-24",
+      endTime: "22:00",
+      destination: "Hải Phòng",
+      driverOption: "self",
+      pickupOption: "pickup",
+    }),
+  });
+  assert.equal(sameDayQuote.status, 201, JSON.stringify(sameDayQuote.body));
+  assert.equal(sameDayQuote.body.days, 1);
+  assert.equal(sameDayQuote.body.durationHours, 16);
+  assert.equal(sameDayQuote.body.weekendDays, 0);
+
+  const weekendEarlyQuote = await request("/quotes", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({
+      carId: 2,
+      startDate: "2027-09-25",
+      startTime: "06:00",
+      endDate: "2027-09-25",
+      endTime: "22:00",
+      driverOption: "self",
+      pickupOption: "pickup",
+    }),
+  });
+  assert.equal(weekendEarlyQuote.status, 201);
+  assert.equal(weekendEarlyQuote.body.weekendDays, 1);
+  const sameDayQuoteDetail = await request(
+    `/quotes/${sameDayQuote.body.quoteId}`,
+    { token: renter },
+  );
+  assert.equal(sameDayQuoteDetail.body.destination, "Hải Phòng");
+
+  const limitedPromotion = await request("/admin/promotions", {
+    method: "POST",
+    token: admin,
+    body: JSON.stringify({
+      code: "LASTSLOT",
+      title: "Lượt ưu đãi cuối",
+      type: "fixed",
+      value: 100000,
+      minRental: 0,
+      minDays: 1,
+      usageLimit: 1,
+      expiresAt: "2027-12-31T23:59:59.000Z",
+      active: true,
+    }),
+  });
+  assert.equal(limitedPromotion.status, 201);
+  const limitedQuotes = [];
+  for (const input of [
+    { carId: 1, startDate: "2027-08-01", endDate: "2027-08-02" },
+    { carId: 2, startDate: "2027-08-03", endDate: "2027-08-04" },
+  ]) {
+    const response = await request("/quotes", {
+      method: "POST",
+      token: renter,
+      body: JSON.stringify({
+        ...input,
+        startTime: "08:00",
+        endTime: "20:00",
+        driverOption: "self",
+        pickupOption: "pickup",
+        promoCode: "LASTSLOT",
+      }),
+    });
+    assert.equal(response.status, 201, JSON.stringify(response.body));
+    limitedQuotes.push(response.body);
+  }
+  const firstLimitedBooking = await request("/bookings", {
+    method: "POST",
+    token: renter,
+    headers: { "Idempotency-Key": "promo-last-slot-1" },
+    body: JSON.stringify({
+      quoteId: limitedQuotes[0].quoteId,
+      consent: { policyVersion: limitedQuotes[0].policyVersion },
+    }),
+  });
+  assert.equal(firstLimitedBooking.status, 201);
+  const exhaustedPromotionBooking = await request("/bookings", {
+    method: "POST",
+    token: renter,
+    headers: { "Idempotency-Key": "promo-last-slot-2" },
+    body: JSON.stringify({
+      quoteId: limitedQuotes[1].quoteId,
+      consent: { policyVersion: limitedQuotes[1].policyVersion },
+    }),
+  });
+  assert.equal(exhaustedPromotionBooking.status, 409);
+
   const quoteInput = {
     carId: 1,
     startDate: "2027-06-10",
+    startTime: "08:00",
     endDate: "2027-06-12",
+    endTime: "20:00",
     driverOption: "self",
     pickupOption: "pickup",
   };
@@ -223,6 +363,22 @@ try {
   });
   assert.equal(accepted.status, 200);
 
+  const contractBeforePayment = await request("/contracts", {
+    method: "POST",
+    token: owner,
+    body: JSON.stringify({ bookingId: booking.body.id }),
+  });
+  assert.equal(contractBeforePayment.status, 409);
+
+  const payment = await request(`/bookings/${booking.body.id}/payment`, {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({ method: "demo" }),
+  });
+  assert.equal(payment.status, 200, JSON.stringify(payment.body));
+  assert.equal(payment.body.paymentStatus, "Paid");
+  assert.equal(payment.body.amount, booking.body.deposit);
+
   const contract = await request("/contracts", {
     method: "POST",
     token: owner,
@@ -279,7 +435,7 @@ try {
   assert.equal(resume.status, 409);
 
   console.log(
-    "PaceCar API smoke test passed (authorization, pricing, booking, contract, moderation).",
+    "PaceCar API smoke test passed (same-day journey, payment, booking, contract, authorization, moderation).",
   );
 } finally {
   if (server.exitCode === null) {

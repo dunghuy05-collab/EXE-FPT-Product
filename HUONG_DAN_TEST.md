@@ -47,7 +47,23 @@ Các màn hình nên kiểm thử:
 - Admin: dashboard, duyệt tin xe, cảnh báo rủi ro và quản lý ưu đãi tại `/admin/promotions`.
 - Footer: Tìm xe, Cách hoạt động và Hỗ trợ tranh chấp.
 
-## 4. Kiểm tra trước khi test
+## 4. Kịch bản kiểm thử hành trình khách hàng
+
+Persona: khách hàng ở Hà Nội, thuê xe tự lái để đi Hải Phòng, nhận lúc 06:00 và trả lúc 22:00 trong cùng một ngày tương lai.
+
+1. Ở trang chủ, chọn **Tự lái**, **Địa điểm nhận xe: Hà Nội**, **Điểm đến dự kiến: Hải Phòng**, ngày tương lai và giờ `06:00`–`22:00`.
+2. Tìm xe, mở một xe phù hợp và kiểm tra báo giá hiển thị `16 giờ (tính 1 ngày)`.
+3. Tiếp tục đặt xe, đăng nhập `renter@pacecar.vn`, đồng ý điều khoản và gửi yêu cầu.
+4. Đăng nhập `owner@pacecar.vn`, mở **Đơn thuê xe** và chấp nhận yêu cầu.
+5. Đăng nhập lại tài khoản người thuê, mở **Đơn thuê xe** và chọn **Thanh toán cọc (demo)**.
+6. Chủ xe mở hợp đồng, phát hành và ký; người thuê đăng nhập để ký phần còn lại.
+7. Tại thời điểm nhận xe, mở **Giao nhận**, tải ảnh, nhập nhiên liệu/ODO và lưu biên bản check-in.
+8. Khi trả xe, lưu biên bản check-out tương tự. Chủ xe xác nhận **Hoàn tất chuyến**.
+9. Người thuê kiểm tra trạng thái `Completed` và gửi đánh giá chuyến đi.
+
+Thanh toán trong kịch bản này chỉ là mô phỏng, không thu tiền thật. Nếu người test không biết phải bấm gì tiếp theo ở bất kỳ bước nào, ghi lại ảnh màn hình, vai trò đăng nhập và trạng thái booking để xem đó là một vấn đề UX cần cải thiện.
+
+## 5. Kiểm tra trước khi test
 
 ```powershell
 npm test
@@ -56,7 +72,7 @@ npm run build
 
 `npm test` dùng database tạm nên không làm thay đổi dữ liệu demo.
 
-## 5. Xử lý lỗi thường gặp
+## 6. Xử lý lỗi thường gặp
 
 ### PowerShell chặn npm
 
@@ -87,7 +103,7 @@ Backend sẽ tự tạo lại database từ seed. Không gửi file `db.json` c�
 
 Đảm bảo cả hai dòng Vite và PaceCar API đều đang chạy trong terminal. Kiểm tra trực tiếp http://localhost:4000/api/health; kết quả đúng là JSON có `"ok": true`.
 
-## 6. Gửi báo lỗi
+## 7. Gửi báo lỗi
 
 Khi gặp lỗi, gửi kèm:
 

@@ -34,7 +34,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import { api, date, money } from "./services/api";
+import { api, date, dateTime, money } from "./services/api";
 import {
   Button,
   CarCard,
@@ -57,6 +57,14 @@ import {
 import { useAuth } from "./auth/AuthContext";
 import SearchBar from "./components/SearchBar";
 const Load = PageLoading;
+const localIsoDate = (offsetDays = 0) => {
+  const value = new Date();
+  value.setDate(value.getDate() + offsetDays);
+  const year = value.getFullYear(),
+    month = String(value.getMonth() + 1).padStart(2, "0"),
+    day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 const useFetch = (path) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -543,8 +551,11 @@ export function Cars() {
     const next = new URLSearchParams();
     for (const key of [
       "location",
+      "destination",
       "startDate",
+      "startTime",
       "endDate",
+      "endTime",
       "driverOption",
       "promoCode",
     ]) {
@@ -1035,12 +1046,15 @@ export function CarDetail() {
     { user } = useAuth();
   const { data: car, error, reload } = useFetch(`/cars/${id}`),
     { data: reviews } = useFetch(`/reviews?carId=${id}`);
-  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10),
-    later = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);
+  const today = localIsoDate(),
+    tomorrow = localIsoDate(1),
+    later = localIsoDate(3);
   const [startDate, setStartDate] = useState(
       params.get("startDate") || tomorrow,
     ),
+    [startTime, setStartTime] = useState(params.get("startTime") || "08:00"),
     [endDate, setEndDate] = useState(params.get("endDate") || later),
+    [endTime, setEndTime] = useState(params.get("endTime") || "20:00"),
     [pickupOption, setPickupOption] = useState("pickup"),
     [promo, setPromo] = useState(params.get("promoCode") || ""),
     [appliedPromo, setAppliedPromo] = useState(params.get("promoCode") || ""),
@@ -1050,15 +1064,15 @@ export function CarDetail() {
   const quoteRequest = useRef(0);
   const requestQuote = async (code = appliedPromo, preserveOnError = false) => {
     if (!car) return;
-    const start = new Date(startDate),
-      end = new Date(endDate);
+    const start = new Date(`${startDate}T${startTime}:00`),
+      end = new Date(`${endDate}T${endTime}:00`);
     if (
       !Number.isFinite(start.getTime()) ||
       !Number.isFinite(end.getTime()) ||
       end <= start
     ) {
       setQuote(null);
-      setQuoteError("Ngày trả xe phải sau ngày nhận xe");
+      setQuoteError("Thời gian trả xe phải sau thời gian nhận xe");
       return;
     }
     const requestId = ++quoteRequest.current;
@@ -1071,11 +1085,14 @@ export function CarDetail() {
         body: JSON.stringify({
           carId: car.id,
           startDate,
+          startTime,
           endDate,
+          endTime,
           driverOption: params.get("driverOption") || "self",
           pickupOption,
           pickupLocation: car.location,
           returnLocation: car.location,
+          destination: params.get("destination") || undefined,
           promoCode: code || undefined,
         }),
       });
@@ -1094,10 +1111,12 @@ export function CarDetail() {
     return () => {
       quoteRequest.current += 1;
     };
-  }, [car?.id, startDate, endDate, pickupOption]);
+  }, [car?.id, startDate, startTime, endDate, endTime, pickupOption]);
   if (error) return <ErrorState message={error} onRetry={reload} />;
   if (!car) return <Load />;
-  const photos = car.photos?.length ? car.photos : [car.imageUrl];
+  const photos = (car.photos?.length ? car.photos : [car.imageUrl]).filter(
+    Boolean,
+  );
   async function toggleFavorite() {
     if (!user)
       return nav(
@@ -1151,28 +1170,32 @@ export function CarDetail() {
           </Button>
         </div>
       </div>
-      <div className="grid gap-3 md:grid-cols-4">
+      <div
+        className={`grid gap-3 ${photos.length > 1 ? "md:grid-cols-4" : ""}`}
+      >
         <img
           src={photos[0]}
           alt={`${car.name} - ảnh chính`}
-          className="h-[430px] w-full rounded-2xl object-cover md:col-span-3"
+          className={`h-[430px] w-full rounded-2xl object-cover ${photos.length > 1 ? "md:col-span-3" : ""}`}
         />
-        <div className="grid grid-rows-2 gap-3">
-          {[photos[1] || photos[0], photos[2] || photos[0]].map((src, i) => (
-            <div className="relative overflow-hidden rounded-2xl" key={i}>
-              <img
-                src={src}
-                alt={`${car.name} - ảnh ${i + 2}`}
-                className="h-full w-full object-cover"
-              />
-              {i === 1 && (
-                <span className="absolute inset-0 grid place-items-center bg-slate-950/50 font-bold text-white">
-                  <Camera className="mr-2 inline" /> {photos.length} ảnh
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
+        {photos.length > 1 && (
+          <div className="grid grid-rows-2 gap-3">
+            {photos.slice(1, 3).map((src, i) => (
+              <div className="relative overflow-hidden rounded-2xl" key={i}>
+                <img
+                  src={src}
+                  alt={`${car.name} - ảnh ${i + 2}`}
+                  className="h-full w-full object-cover"
+                />
+                {i === Math.min(1, photos.length - 2) && (
+                  <span className="absolute inset-0 grid place-items-center bg-slate-950/50 font-bold text-white">
+                    <Camera className="mr-2 inline" /> {photos.length} ảnh
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
         <main className="space-y-7">
@@ -1257,7 +1280,9 @@ export function CarDetail() {
             <div className="flex items-end justify-between">
               <h2 className="text-xl font-bold">Đánh giá chuyến đi</h2>
               <span className="text-sm font-bold text-amber-500">
-                ★ {car.rating} · {reviews?.length || 0} đánh giá
+                {reviews?.length
+                  ? `★ ${car.rating} · ${reviews.length} đánh giá`
+                  : "Chưa có đánh giá trên PaceCar"}
               </span>
             </div>
             <div className="mt-4 space-y-3">
@@ -1298,22 +1323,46 @@ export function CarDetail() {
             </div>
             <div className="mt-5 grid grid-cols-2 gap-3">
               <Field label="Nhận xe">
-                <input
-                  type="date"
-                  min={tomorrow}
-                  className="input px-3"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
+                <div className="space-y-2">
+                  <input
+                    aria-label="Ngày nhận xe"
+                    type="date"
+                    min={today}
+                    className="input px-3"
+                    value={startDate}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setStartDate(value);
+                      if (endDate < value) setEndDate(value);
+                    }}
+                  />
+                  <input
+                    aria-label="Giờ nhận xe"
+                    type="time"
+                    className="input px-3"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                  />
+                </div>
               </Field>
               <Field label="Trả xe">
-                <input
-                  type="date"
-                  min={startDate || tomorrow}
-                  className="input px-3"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
+                <div className="space-y-2">
+                  <input
+                    aria-label="Ngày trả xe"
+                    type="date"
+                    min={startDate || tomorrow}
+                    className="input px-3"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                  <input
+                    aria-label="Giờ trả xe"
+                    type="time"
+                    className="input px-3"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                  />
+                </div>
               </Field>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2">
@@ -1356,7 +1405,7 @@ export function CarDetail() {
             {quote && (
               <div className="mt-5 space-y-3 rounded-xl bg-slate-50 p-4 text-sm">
                 <PriceLine
-                  label={`${quote.days} ngày × ${money(quote.pricePerDay)}`}
+                  label={`${quote.durationLabel || `${quote.days} ngày`} × ${money(quote.pricePerDay)}`}
                   value={quote.baseRental}
                 />
                 {quote.weekendSurcharge > 0 && (
@@ -1391,11 +1440,11 @@ export function CarDetail() {
                   />
                 )}
                 <div className="flex justify-between border-t pt-3 text-base">
-                  <b>Tổng thanh toán</b>
+                  <b>Tổng phí thuê</b>
                   <b className="text-brand-600">{money(quote.totalPrice)}</b>
                 </div>
                 <div className="flex justify-between text-xs text-slate-500">
-                  <span>Cọc hoàn lại</span>
+                  <span>Tiền cọc hoàn lại · chưa thanh toán ở bước này</span>
                   <b>{money(quote.deposit)}</b>
                 </div>
               </div>
@@ -1421,7 +1470,9 @@ export function CarDetail() {
         <div className="container-app flex items-center justify-between gap-3 px-0">
           <div>
             <p className="text-xs text-slate-500">
-              {quote ? `Tổng ${quote.days} ngày` : "Chọn lịch để báo giá"}
+              {quote
+                ? `Tổng ${quote.durationLabel || `${quote.days} ngày`}`
+                : "Chọn lịch để báo giá"}
             </p>
             <b className="text-lg text-brand-600">
               {quote
@@ -1783,7 +1834,8 @@ function BookingRow({ b, actions = false, reload }) {
         </div>
         <p className="mt-1 text-sm text-slate-500">
           {actions && `${b.renter?.name} · `}
-          {date(b.startDate)} – {date(b.endDate)} · {money(b.totalPrice)}
+          {dateTime(b.startDate)} – {dateTime(b.endDate)} ·{" "}
+          {money(b.totalPrice)}
         </p>
         {actions && (
           <div className="mt-2 flex gap-2">
@@ -2196,6 +2248,7 @@ export function Contract() {
     canIssue =
       !c.id &&
       (isOwner || user?.role === "admin") &&
+      b.paymentStatus !== "Unpaid" &&
       ["Accepted", "Deposit Required"].includes(b.status),
     alreadySigned = isOwner ? c.ownerSigned : isRenter ? c.renterSigned : true,
     canSign = Boolean(
@@ -2241,7 +2294,9 @@ export function Contract() {
           <p className="mt-1">
             {canIssue
               ? "Kiểm tra thông tin hai bên trước khi phát hành bản hợp đồng cố định."
-              : "Vui lòng chờ chủ xe chấp nhận yêu cầu và phát hành hợp đồng."}
+              : b.paymentStatus === "Unpaid"
+                ? "Đang chờ người thuê hoàn tất thanh toán tiền cọc."
+                : "Vui lòng chờ chủ xe chấp nhận yêu cầu và phát hành hợp đồng."}
           </p>
           {canIssue && (
             <Button
@@ -2304,9 +2359,10 @@ export function Contract() {
             <Info
               title="Thời gian thuê"
               lines={[
-                `${date(b.startDate)} – ${date(b.endDate)}`,
+                `${dateTime(b.startDate)} – ${dateTime(b.endDate)}`,
                 `Tổng thanh toán: ${money(b.totalPrice)}`,
                 `Tiền cọc hoàn lại: ${money(b.deposit)}`,
+                `Trạng thái tiền cọc: ${b.paymentStatus === "Paid" ? "Đã thanh toán (mô phỏng)" : b.paymentStatus === "Unpaid" ? "Chưa thanh toán" : "Chưa áp dụng"}`,
               ]}
             />
           </div>
@@ -3034,7 +3090,8 @@ function LegacyBookingV2() {
               </div>
               {!validStep1 && (
                 <p className="mt-4 text-sm text-red-600">
-                  Ngày trả phải sau ngày nhận; địa điểm nhận và trả xe không được để trống.
+                  Ngày trả phải sau ngày nhận; địa điểm nhận và trả xe không
+                  được để trống.
                 </p>
               )}
               <div className="mt-5 grid grid-cols-2 gap-3">
@@ -3224,9 +3281,14 @@ export function Booking() {
   const [notes, setNotes] = useState(""),
     [submitting, setSubmitting] = useState(false),
     [accepted, setAccepted] = useState(false);
-  const [idempotencyKey] = useState(
-    () => crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`,
-  );
+  const [idempotencyKey] = useState(() => {
+    const storageKey = `pacecar-booking-key:${quoteId}`,
+      existing = sessionStorage.getItem(storageKey);
+    if (existing) return existing;
+    const created = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
+    sessionStorage.setItem(storageKey, created);
+    return created;
+  });
   if (error || carError)
     return (
       <ErrorState
@@ -3269,6 +3331,7 @@ export function Booking() {
           ? "Đặt xe nhanh đã được chấp nhận"
           : "Đã gửi yêu cầu đến chủ xe",
       );
+      sessionStorage.removeItem(`pacecar-booking-key:${quoteId}`);
       nav(`/contract/${booking.id}`);
     } catch (e) {
       toast(e.message);
@@ -3294,8 +3357,14 @@ export function Booking() {
               <div>
                 <h2 className="text-xl font-bold">{car.name}</h2>
                 <p className="mt-2 text-sm text-slate-500">
-                  {quote.startDate} → {quote.endDate} · {quote.days} ngày
+                  {dateTime(quote.startDate)} → {dateTime(quote.endDate)} ·{" "}
+                  {quote.durationLabel || `${quote.days} ngày`}
                 </p>
+                {quote.destination && (
+                  <p className="mt-1 text-sm text-slate-500">
+                    Điểm đến dự kiến: {quote.destination}
+                  </p>
+                )}
                 <p className="mt-1 text-sm text-slate-500">
                   {quote.pickupOption === "delivery"
                     ? "Giao xe tận nơi"
@@ -3348,7 +3417,7 @@ export function Booking() {
             <h2 className="text-xl font-bold">Chi tiết thanh toán</h2>
             <div className="mt-5 space-y-3 text-sm">
               <PriceLine
-                label={`${quote.days} ngày thuê`}
+                label={quote.durationLabel || `${quote.days} ngày thuê`}
                 value={quote.baseRental}
               />
               {quote.weekendSurcharge > 0 && (
@@ -3380,11 +3449,11 @@ export function Booking() {
                 />
               )}
               <div className="flex justify-between border-t pt-4 text-lg">
-                <b>Tổng cộng</b>
+                <b>Tổng phí thuê</b>
                 <b className="text-brand-600">{money(quote.totalPrice)}</b>
               </div>
               <div className="flex justify-between text-xs text-slate-500">
-                <span>Cọc hoàn lại</span>
+                <span>Tiền cọc hoàn lại · chưa thanh toán ở bước này</span>
                 <b>{money(quote.deposit)}</b>
               </div>
             </div>

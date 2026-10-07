@@ -14,27 +14,31 @@ const isoDate = (offset = 0) => {
   date.setDate(date.getDate() + offset);
   return formatLocalDate(date);
 };
-const addDays = (value, amount) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return "";
-  const [year, month, day] = value.split("-").map(Number);
-  const date = new Date(year, month - 1, day, 12);
-  date.setDate(date.getDate() + amount);
-  return formatLocalDate(date);
-};
 export default function SearchBar({ compact = false }) {
   const nav = useNavigate(),
     toast = useToast(),
     [params, setParams] = useSearchParams();
   const valuesFromParams = () => ({
     location: params.get("location") || "Hà Nội",
+    destination: params.get("destination") || "",
     startDate: params.get("startDate") || isoDate(1),
+    startTime: params.get("startTime") || "08:00",
     endDate: params.get("endDate") || isoDate(3),
+    endTime: params.get("endTime") || "20:00",
     driverOption: params.get("driverOption") || "self",
   });
   const [form, setForm] = useState(valuesFromParams);
   const relevantParams = useMemo(
     () =>
-      ["location", "startDate", "endDate", "driverOption"]
+      [
+        "location",
+        "destination",
+        "startDate",
+        "startTime",
+        "endDate",
+        "endTime",
+        "driverOption",
+      ]
         .map((key) => params.get(key) || "")
         .join("|"),
     [params],
@@ -63,12 +67,24 @@ export default function SearchBar({ compact = false }) {
       toast.error("Ngày nhận xe không thể ở trong quá khứ");
       return;
     }
-    if (form.endDate <= form.startDate) {
-      toast.error("Ngày trả xe phải sau ngày nhận");
+    const start = new Date(`${form.startDate}T${form.startTime}:00`),
+      end = new Date(`${form.endDate}T${form.endTime}:00`);
+    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) {
+      toast.error("Vui lòng chọn đủ ngày và giờ nhận, trả xe");
+      return;
+    }
+    if (start < new Date()) {
+      toast.error("Thời gian nhận xe không thể ở trong quá khứ");
+      return;
+    }
+    if (end <= start) {
+      toast.error("Thời gian trả xe phải sau thời gian nhận xe");
       return;
     }
     const next = compact ? new URLSearchParams(params) : new URLSearchParams();
-    Object.entries(form).forEach(([key, value]) => next.set(key, value));
+    Object.entries(form).forEach(([key, value]) =>
+      value ? next.set(key, value) : next.delete(key),
+    );
     next.delete("page");
     nav(`/cars?${next}`);
   }
@@ -98,7 +114,7 @@ export default function SearchBar({ compact = false }) {
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-[1.15fr_1fr_1fr_auto]">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-[1.1fr_1fr_1.25fr_1.25fr_auto]">
         <label className="relative col-span-2 lg:col-span-1">
           <span className="label">
             <MapPin className="mr-1 inline" size={16} />
@@ -116,44 +132,81 @@ export default function SearchBar({ compact = false }) {
             <option>Hòa Lạc, Hà Nội</option>
           </select>
         </label>
-        <label>
+        <label className="relative col-span-2 lg:col-span-1">
           <span className="label">
-            <CalendarDays className="mr-1 inline" size={16} />
-            Ngày nhận xe
+            <MapPin className="mr-1 inline" size={16} />
+            Điểm đến dự kiến
           </span>
           <input
-            type="date"
-            min={isoDate(0)}
-            required
             className="input"
-            value={form.startDate}
-            onChange={(e) => {
-              const startDate = e.target.value;
-              setForm({
-                ...form,
-                startDate,
-                endDate:
-                  startDate && form.endDate <= startDate
-                    ? addDays(startDate, 1)
-                    : form.endDate,
-              });
-            }}
+            value={form.destination}
+            onChange={(e) => setForm({ ...form, destination: e.target.value })}
+            placeholder="Ví dụ: Hải Phòng"
           />
+          <span className="mt-1 block text-[11px] text-slate-400">
+            Không phải địa điểm nhận xe
+          </span>
         </label>
-        <label>
+        <fieldset>
           <span className="label">
             <CalendarDays className="mr-1 inline" size={16} />
-            Ngày trả xe
+            Nhận xe
           </span>
-          <input
-            type="date"
-            min={addDays(form.startDate, 1) || isoDate(1)}
-            required
-            className="input"
-            value={form.endDate}
-            onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-          />
-        </label>
+          <div className="flex gap-2">
+            <input
+              aria-label="Ngày nhận xe"
+              type="date"
+              min={isoDate(0)}
+              required
+              className="input min-w-0 px-2"
+              value={form.startDate}
+              onChange={(e) => {
+                const startDate = e.target.value;
+                setForm({
+                  ...form,
+                  startDate,
+                  endDate:
+                    startDate && form.endDate < startDate
+                      ? startDate
+                      : form.endDate,
+                });
+              }}
+            />
+            <input
+              aria-label="Giờ nhận xe"
+              type="time"
+              required
+              className="input w-[92px] px-2"
+              value={form.startTime}
+              onChange={(e) => setForm({ ...form, startTime: e.target.value })}
+            />
+          </div>
+        </fieldset>
+        <fieldset>
+          <span className="label">
+            <CalendarDays className="mr-1 inline" size={16} />
+            Trả xe
+          </span>
+          <div className="flex gap-2">
+            <input
+              aria-label="Ngày trả xe"
+              type="date"
+              min={form.startDate || isoDate(0)}
+              required
+              className="input min-w-0 px-2"
+              value={form.endDate}
+              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+            />
+            <input
+              aria-label="Giờ trả xe"
+              type="time"
+              required
+              className="input w-[92px] px-2"
+              value={form.endTime}
+              onChange={(e) => setForm({ ...form, endTime: e.target.value })}
+            />
+          </div>
+        </fieldset>
         <Button className="col-span-2 mt-auto h-[50px] px-7 lg:col-span-1">
           <Search size={18} />
           Tìm xe

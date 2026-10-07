@@ -473,6 +473,23 @@ const canAccessBooking = (user, booking) =>
   user?.role === "admin" ||
   (user?.role === "renter" && booking.renterId === user.id) ||
   (user?.role === "owner" && booking.ownerId === user.id);
+const validCalendarDate = (value) => {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value))
+    return false;
+  const [year, month, day] = value.split("-").map(Number),
+    parsed = new Date(Date.UTC(year, month - 1, day));
+  return (
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month - 1 &&
+    parsed.getUTCDate() === day
+  );
+};
+const rentalDateTime = (dateValue, timeValue) =>
+  validCalendarDate(dateValue) &&
+  typeof timeValue === "string" &&
+  /^([01]\d|2[0-3]):[0-5]\d$/.test(timeValue)
+    ? `${dateValue}T${timeValue}:00+07:00`
+    : null;
 const validPeriod = (startDate, endDate) => {
   const start = new Date(startDate),
     end = new Date(endDate);
@@ -485,11 +502,19 @@ const validPeriod = (startDate, endDate) => {
 const isPastDate = (value) => {
   const date = new Date(value),
     today = new Date();
+  if (!Number.isFinite(date.getTime())) return true;
+  if (typeof value === "string" && value.includes("T")) return date < today;
   today.setHours(0, 0, 0, 0);
-  return !Number.isFinite(date.getTime()) || date < today;
+  return date < today;
 };
 const rentalDays = (startDate, endDate) =>
   Math.max(1, Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000));
+const localCalendarDay = (timestamp, offsetDays = 0) => {
+  const datePart = String(timestamp).slice(0, 10);
+  if (!validCalendarDate(datePart)) return null;
+  const [year, month, day] = datePart.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + offsetDays)).getUTCDay();
+};
 const carAvailable = (data, carId, startDate, endDate) =>
   !data.bookings.some(
     (booking) =>
@@ -500,12 +525,20 @@ const carAvailable = (data, carId, startDate, endDate) =>
   );
 const buildQuote = (data, car, input) => {
   const policy = data.pricingPolicy,
-    days = rentalDays(input.startDate, input.endDate);
+    durationHours = Math.max(
+      1,
+      Math.ceil(
+        (new Date(input.endDate) - new Date(input.startDate)) / 3600000,
+      ),
+    ),
+    days = rentalDays(input.startDate, input.endDate),
+    durationLabel =
+      durationHours < 24
+        ? `${durationHours} giờ (tính 1 ngày)`
+        : `${days} ngày`;
   let weekendDays = 0;
   for (let i = 0; i < days; i++) {
-    const day = new Date(
-      new Date(input.startDate).getTime() + i * 86400000,
-    ).getDay();
+    const day = localCalendarDay(input.startDate, i);
     if (day === 0 || day === 6) weekendDays++;
   }
   const baseRental = days * Number(car.pricePerDay),
@@ -565,6 +598,8 @@ const buildQuote = (data, car, input) => {
   return {
     policyVersion: policy.version,
     days,
+    durationHours,
+    durationLabel,
     pricePerDay: Number(car.pricePerDay),
     baseRental,
     weekendDays,
@@ -881,6 +916,8 @@ app.get("/api/cars", (req, res) => {
     cars.map((car) => ({
       ...publicCar(car),
       owner: publicOwnerSummary(find(data.users, car.ownerId)),
+      reviewCount: data.reviews.filter((review) => review.carId === car.id)
+        .length,
     })),
   );
 });
@@ -890,16 +927,26 @@ app.get("/api/search/cars", (req, res) => {
   let cars = data.cars.filter((car) => car.listingStatus === "Published");
   const {
     location,
+    destination,
     startDate,
+    startTime,
     endDate,
+    endTime,
     type,
     transmission,
     fuel,
     driverOption,
     sort = "recommended",
   } = req.query;
-  if ((startDate || endDate) && !validPeriod(startDate, endDate))
+  const periodStart = rentalDateTime(startDate, startTime),
+    periodEnd = rentalDateTime(endDate, endTime);
+  const hasAnyPeriodField = startDate || startTime || endDate || endTime;
+  if (hasAnyPeriodField && !validPeriod(periodStart, periodEnd))
     return res.status(400).json({ message: "Thời gian thuê không hợp lệ" });
+  if (hasAnyPeriodField && isPastDate(periodStart))
+    return res
+      .status(400)
+      .json({ message: "Thời gian nhận xe không thể ở trong quá khứ" });
   if (location)
     cars = cars.filter((car) =>
       car.location.toLowerCase().includes(String(location).toLowerCase()),
@@ -926,8 +973,10 @@ app.get("/api/search/cars", (req, res) => {
     cars = cars.filter((car) => car.deliveryOptions?.ownerDelivery);
   if (req.query.instantBooking === "true")
     cars = cars.filter((car) => car.instantBooking);
-  if (startDate && endDate)
-    cars = cars.filter((car) => carAvailable(data, car.id, startDate, endDate));
+  if (periodStart && periodEnd)
+    cars = cars.filter((car) =>
+      carAvailable(data, car.id, periodStart, periodEnd),
+    );
   const favoriteIds = new Set(
     viewer
       ? data.favorites
@@ -937,11 +986,15 @@ app.get("/api/search/cars", (req, res) => {
   );
   let items = cars.map((car) => {
     const owner = find(data.users, car.ownerId),
-      days = startDate && endDate ? rentalDays(startDate, endDate) : 1;
+      days = periodStart && periodEnd ? rentalDays(periodStart, periodEnd) : 1,
+      reviewCount = data.reviews.filter(
+        (review) => review.carId === car.id,
+      ).length;
     return {
       ...publicCar(car),
       owner: publicOwnerSummary(owner),
       favorite: favoriteIds.has(car.id),
+      reviewCount,
       estimatedDays: days,
       estimatedTotal: days * Number(car.pricePerDay),
     };
@@ -970,8 +1023,11 @@ app.get("/api/search/cars", (req, res) => {
     totalPages: Math.ceil(total / limit),
     criteria: {
       location: location || "",
+      destination: destination || "",
       startDate: startDate || null,
+      startTime: startTime || null,
       endDate: endDate || null,
+      endTime: endTime || null,
     },
   });
 });
@@ -1026,13 +1082,11 @@ app.post("/api/admin/promotions", requireRole(["admin"]), (req, res) => {
     createdAt: now,
   });
   write(data);
-  res
-    .status(201)
-    .json({
-      ...promotion,
-      usageCount: 0,
-      available: promotionIsAvailable(data, promotion),
-    });
+  res.status(201).json({
+    ...promotion,
+    usageCount: 0,
+    available: promotionIsAvailable(data, promotion),
+  });
 });
 app.put("/api/admin/promotions/:id", requireRole(["admin"]), (req, res) => {
   const data = read(),
@@ -1138,6 +1192,8 @@ app.get(
         .map((car) => ({
           ...publicCar(car),
           owner: publicOwnerSummary(find(data.users, car.ownerId)),
+          reviewCount: data.reviews.filter((review) => review.carId === car.id)
+            .length,
           favorite: true,
         })),
     );
@@ -1199,6 +1255,12 @@ app.post("/api/quotes", quoteLimiter, (req, res) => {
         .status(400)
         .json({ message: "Địa điểm nhận trả xe không hợp lệ" });
   if (
+    req.body.destination !== undefined &&
+    (typeof req.body.destination !== "string" ||
+      req.body.destination.trim().length > 160)
+  )
+    return res.status(400).json({ message: "Điểm đến dự kiến không hợp lệ" });
+  if (
     req.body.promoCode !== undefined &&
     req.body.promoCode !== null &&
     (typeof req.body.promoCode !== "string" ||
@@ -1206,8 +1268,8 @@ app.post("/api/quotes", quoteLimiter, (req, res) => {
   )
     return res.status(400).json({ message: "Mã ưu đãi không hợp lệ" });
   const quoteInput = {
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
+    startDate: rentalDateTime(req.body.startDate, req.body.startTime),
+    endDate: rentalDateTime(req.body.endDate, req.body.endTime),
     driverOption,
     pickupOption,
     pickupLocation:
@@ -1216,6 +1278,7 @@ app.post("/api/quotes", quoteLimiter, (req, res) => {
       String(req.body.returnLocation || "").trim() ||
       String(req.body.pickupLocation || "").trim() ||
       car.location,
+    destination: String(req.body.destination || "").trim() || null,
     promoCode:
       String(req.body.promoCode || "")
         .trim()
@@ -1255,6 +1318,7 @@ app.post("/api/quotes", quoteLimiter, (req, res) => {
         pickupOption: quoteInput.pickupOption,
         pickupLocation: quoteInput.pickupLocation,
         returnLocation: quoteInput.returnLocation,
+        destination: quoteInput.destination,
         promoCode: quoteInput.promoCode,
         breakdown,
         createdAt: new Date().toISOString(),
@@ -1298,6 +1362,7 @@ app.get("/api/quotes/:id", (req, res) => {
     pickupOption: quote.pickupOption,
     pickupLocation: quote.pickupLocation,
     returnLocation: quote.returnLocation,
+    destination: quote.destination || null,
     ...quote.breakdown,
   });
 });
@@ -1809,6 +1874,18 @@ app.post("/api/bookings", bookingLimiter, requireRole(["renter"]), (q, s) => {
     return s
       .status(409)
       .json({ message: "Xe đã có lịch thuê trong khoảng thời gian này" });
+  if (quote.promoCode) {
+    const promotion = d.promotions.find(
+      (item) =>
+        String(item.code).toUpperCase() ===
+        String(quote.promoCode).toUpperCase(),
+    );
+    if (!promotionIsAvailable(d, promotion))
+      return s.status(409).json({
+        message:
+          "Mã ưu đãi đã hết lượt sử dụng. Vui lòng tạo lại báo giá trước khi đặt xe",
+      });
+  }
   const x = {
     id: nextId(d.bookings),
     renterId: renter.id,
@@ -1818,6 +1895,7 @@ app.post("/api/bookings", bookingLimiter, requireRole(["renter"]), (q, s) => {
     endDate: quote.endDate,
     pickupLocation: quote.pickupLocation,
     returnLocation: quote.returnLocation,
+    destination: quote.destination || null,
     pickupOption: quote.pickupOption,
     driverOption: quote.driverOption,
     notes: String(q.body.notes || "").slice(0, 1000),
@@ -1832,6 +1910,7 @@ app.post("/api/bookings", bookingLimiter, requireRole(["renter"]), (q, s) => {
     quoteId: quote.id,
     promoCode: quote.promoCode,
     pricingSnapshot: quote.breakdown,
+    paymentStatus: "Unpaid",
     consent: {
       policyVersion: quote.breakdown.policyVersion,
       acceptedAt: new Date().toISOString(),
@@ -1865,6 +1944,55 @@ app.post("/api/bookings", bookingLimiter, requireRole(["renter"]), (q, s) => {
   });
   write(d);
   s.status(201).json(x);
+});
+app.post("/api/bookings/:id/payment", requireRole(["renter"]), (q, s) => {
+  const d = read(),
+    booking = find(d.bookings, q.params.id);
+  if (!booking)
+    return s.status(404).json({ message: "Không tìm thấy booking" });
+  if (booking.renterId !== q.authUser.id)
+    return s
+      .status(403)
+      .json({ message: "Bạn không có quyền thanh toán booking này" });
+  if (!["Accepted", "Deposit Required"].includes(booking.status))
+    return s.status(409).json({
+      message: "Chỉ thanh toán sau khi yêu cầu thuê xe được chấp nhận",
+    });
+  if (booking.paymentStatus === "Paid")
+    return s.json({
+      bookingId: booking.id,
+      paymentStatus: booking.paymentStatus,
+      paidAt: booking.paidAt,
+      amount: booking.deposit,
+    });
+  booking.paymentStatus = "Paid";
+  booking.paymentMethod = "Demo payment";
+  booking.paidAt = new Date().toISOString();
+  d.auditLogs.push({
+    id: nextId(d.auditLogs),
+    entity: "booking",
+    entityId: booking.id,
+    action: "DEPOSIT_PAYMENT_RECORDED",
+    actorId: q.authUser.id,
+    detail: String(booking.deposit),
+    createdAt: booking.paidAt,
+  });
+  d.notifications.push({
+    id: nextId(d.notifications),
+    userId: booking.ownerId,
+    title: "Đã ghi nhận thanh toán tiền cọc",
+    message: `Booking #PC${booking.id} đã thanh toán tiền cọc (mô phỏng).`,
+    type: "payment",
+    read: false,
+    createdAt: booking.paidAt,
+  });
+  write(d);
+  s.json({
+    bookingId: booking.id,
+    paymentStatus: booking.paymentStatus,
+    paidAt: booking.paidAt,
+    amount: booking.deposit,
+  });
 });
 app.put(
   "/api/bookings/:id/status",
@@ -2020,6 +2148,11 @@ app.post("/api/contracts", requireRole(["owner", "admin"]), (q, s) => {
   if (!["Accepted", "Deposit Required"].includes(booking.status))
     return s.status(409).json({
       message: "Chỉ phát hành hợp đồng cho booking đã được chấp nhận",
+    });
+  if (booking.paymentStatus === "Unpaid")
+    return s.status(409).json({
+      message:
+        "Người thuê cần hoàn tất thanh toán tiền cọc trước khi phát hành hợp đồng",
     });
   const car = find(d.cars, booking.carId);
   const x = {

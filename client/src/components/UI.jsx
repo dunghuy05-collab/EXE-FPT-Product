@@ -169,10 +169,16 @@ export function CarCard({ car, onRemoveFavorite, removing = false }) {
       <div className="p-5">
         <div className="mb-2 flex items-start justify-between gap-2">
           <h3 className="font-bold text-slate-900">{car.name}</h3>
-          <span className="flex items-center gap-1 text-sm font-bold">
-            <Star size={14} fill="currentColor" className="text-amber-400" />
-            {car.rating}
-          </span>
+          {car.reviewCount > 0 ? (
+            <span className="flex items-center gap-1 text-sm font-bold">
+              <Star size={14} fill="currentColor" className="text-amber-400" />
+              {car.rating} ({car.reviewCount})
+            </span>
+          ) : (
+            <span className="text-xs font-semibold text-slate-400">
+              Chưa có đánh giá
+            </span>
+          )}
         </div>
         <p className="mb-4 text-sm text-slate-500">
           {car.location} · {car.seats} chỗ · {car.transmission}
