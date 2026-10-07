@@ -126,4 +126,9 @@ Detailed methods, routes, findings, evidence, and limitations are documented in
 ## Delivery status
 
 All requested implementation and QA remediation work is complete and verified.
-The changes are committed locally; they have not been pushed or deployed.
+The commits, including the QA audit and browser evidence, have been pushed to
+GitHub `main`. Render serves the updated production frontend; the API health
+check returned HTTP 200, and production smoke checks confirmed the registration
+and car-search pages render at 430 CSS px without horizontal overflow. No
+production booking, payment, account creation, or other data mutation was
+performed.
