@@ -1,0 +1,111 @@
+{
+  "flows": {
+    "filterSuv": {
+      "url": "https://pacecarf.onrender.com/cars?location=H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self&type=SUV",
+      "h1": [
+        "4 xe phù hợp"
+      ],
+      "cards": 4
+    },
+    "filterReset": {
+      "url": "https://pacecarf.onrender.com/cars?location=H%C3%A0+N%E1%BB%99i&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self&destination=",
+      "h1": [
+        "10 xe phù hợp"
+      ],
+      "cards": 10
+    },
+    "contract": {
+      "url": "https://pacecarf.onrender.com/contract/6",
+      "h1": [
+        "Hợp đồng thuê xe điện tử"
+      ],
+      "buttons": [
+        "1",
+        ""
+      ],
+      "text": "PaceCar Tìm xe Vì sao PaceCar? Bảng điều khiển 1 Thuê xe ngay ← Quay lại Draft Hợp đồng chưa được phát hành. Vui lòng chờ chủ xe chấp nhận yêu cầu và phát hành hợp đồng. PACECAR HỢP ĐỒNG THUÊ XE ĐIỆN TỬ Số: PC-DRAFT-6 Căn cứ Bộ luật Dân sự và trên tinh thần tự nguyện, minh bạch của các bên. 01Thông tin các bên Bên thuê Nguyễn Minh An 0901234567 Danh tính: Đã xác thực Chủ xe Đỗ Mai Linh 0966666666 Danh tính: Đã xác thực 02Thông tin xe & thời gian Phương tiện VinFast Lux A2.0 Biển số: Chỉ hiển thị khi đủ điều kiện giao xe Bảo hiểm: Đã xác nhận Thời gian thuê 11/7/2026 – 13/7/2026 Tổng thanh toán: 2.600.000 ₫ Tiền cọc hoàn lại: 7.500.000 ₫ Trạng thái tiền cọc: Chưa áp dụng 03Trách nhiệm & điều khoản Bên thuê sử dụng xe đúng mục đích, không giao xe cho người không có trong hợp đồng. Hai bên ghi nhận tình trạng xe bằng ảnh/video khi giao và nhận xe. Mọi sự cố phải được thông báo ngay cho PaceCar và đơn vị bảo hiểm. Điều khoản điện tử PaceCar phiên bản PC-TERMS-2026.1. Xe VinFast Lux A2.0 được thuê từ 2026-07-11 đến 2026-07-13. Người thuê sử dụng xe đúng mục đích, hai bên ghi nhận giao nhận bằng bằng chứng trên PaceCar và tuân thủ quy trình xử lý sự cố, bồi thường. Nguyễn Minh An Chờ chữ ký Chữ ký điện tử Đỗ Mai Linh Chờ chữ ký Chữ ký điện tử Tài liệu được lưu cùng dấu thời gian và nhật ký thao tác · Mã xác minh PC-DRAFT-6 PaceCar Nền tảng thuê xe dựa trên niềm tin, giúp mọi chuyến đ"
+    },
+    "evidence": {
+      "url": "https://pacecarf.onrender.com/evidence/6",
+      "h1": [
+        "Biên bản giao nhận xe"
+      ],
+      "buttons": [
+        "1",
+        "",
+        "Lưu biên bản",
+        "Mở trung tâm tranh chấp"
+      ],
+      "text": "PaceCar Tìm xe Vì sao PaceCar? Bảng điều khiển 1 Thuê xe ngay BOOKING #6 Biên bản giao nhận xe Chỉ dữ liệu đã lưu trên backend mới được hiển thị; ảnh có dấu thời gian là căn cứ đối chiếu. Check-in · Khi nhận xe Pending Chưa có ảnh được lưu cho giai đoạn này. Mức nhiên liệu (%) Số ODO Ghi chú tình trạng xe Check-out · Khi trả xe Pending Chưa có ảnh được lưu cho giai đoạn này. Chọn ảnh giao nhận JPG, PNG hoặc WEBP · tối đa 6 ảnh Mức nhiên liệu (%) Số ODO Ghi chú tình trạng xe Lưu biên bản Đối chiếu trước / sau Chưa đủ ảnh check-in và check-out để đưa ra kết quả đối chiếu. Mở trung tâm tranh chấp PaceCar Nền tảng thuê xe dựa trên niềm tin, giúp mọi chuyến đi minh bạch và an toàn hơn. Khám phá Tìm xe Cách hoạt động Hỗ trợ tranh chấp Liên hệ hello@pacecar.vn 1900 1000 Hà Nội, Việt Nam"
+    },
+    "dispute": {
+      "blocked": "Không có nút Hỗ trợ trên dữ liệu hiện tại"
+    },
+    "bookingConfirmation": {
+      "url": "https://pacecarf.onrender.com/booking/1?quoteId=dd36de53-9223-452e-8c42-3bfa3d69dc75",
+      "h1": [
+        "Hoàn tất yêu cầu thuê xe"
+      ],
+      "buttons": [
+        "1",
+        "",
+        "Gửi yêu cầu thuê xe"
+      ],
+      "text": "PaceCar Tìm xe Vì sao PaceCar? Bảng điều khiển 1 Thuê xe ngay XÁC NHẬN HÀNH TRÌNH Hoàn tất yêu cầu thuê xe Giá và chính sách đã được khóa trong quote phía server. Toyota Vios 2022 08:00 5/11/27 → 20:00 7/11/27 · 3 ngày Nhận tại vị trí xe · Tự lái Hồ sơ và điều khoản ✓ Danh tính ? Giấy phép lái xe ✓ Trust Score Lời nhắn cho chủ xe Tôi đồng ý với hợp đồng số, chính sách hủy, quy định sử dụng xe và quy trình evidence của PaceCar. Chi tiết thanh toán 3 ngày 1.950.000 ₫ Phụ phí cuối tuần 195.000 ₫ Giảm thuê dài ngày -97.500 ₫ Bảo hiểm 240.000 ₫ Phí nền tảng 204.750 ₫ Tổng phí thuê 2.492.250 ₫ Tiền cọc hoàn lại · chưa thanh toán ở bước này 5.000.000 ₫ Gửi yêu cầu thuê xe Quote dd36de53 · PC-2026.2 PaceCar Nền tảng thuê xe dựa trên niềm tin, giúp mọi chuyến đi minh bạch và an toàn hơn. Khám phá Tìm xe Cách hoạt động Hỗ trợ tranh chấp Liên hệ hello@pacecar.vn 1900 1000 Hà Nội, Việt Nam"
+    },
+    "logout": {
+      "finalPath": "/",
+      "localTokenRemoved": true,
+      "oldTokenStatusAfterLogout": 401
+    },
+    "ownerWizardEmpty": {
+      "url": "https://pacecarf.onrender.com/owner/cars/new",
+      "h1": [
+        "Đăng xe cho thuê"
+      ],
+      "buttons": [
+        "2",
+        "",
+        "Nhận diện xe",
+        "2Thông số",
+        "3Giá & quy định",
+        "4Ảnh & giấy tờ",
+        "5Xem lại",
+        "Camera hành trình",
+        "Bluetooth",
+        "GPS",
+        "Ghế trẻ em",
+        "Cảm biến lùi",
+        "ETC",
+        "Sạc điện thoại",
+        "Camera 360",
+        " Quay lại",
+        "Lưu nháp",
+        "Tiếp tục "
+      ],
+      "text": "PaceCar Tìm xe Vì sao PaceCar? Bảng điều khiển 2 Đăng xe cho thuê KHÔNG GIAN Chủ xe Tổng quan Đơn thuê xe Xe của tôi Đăng xe cho thuê Tài chính Cảnh báo rủi ro Hồ sơ Xe của tôi Hoàn thiện 33% OWNER LISTING STUDIO Đăng xe cho thuê Thông tin đầy đủ giúp xe được duyệt nhanh và tạo niềm tin với người thuê. Nhận diện xe 2 Thông số 3 Giá & quy định 4 Ảnh & giấy tờ 5 Xem lại Thông số và tiện nghi Loại xe Sedan SUV MPV Hatchback Pickup Electric Số chỗ 4 5 7 8 16 Hộp số Tự động Số sàn Nhiên liệu Xăng Dầu Điện Hybrid Hình thức cho thuê Tự lái Có tài xế Tiện nghi Camera hành trình Bluetooth GPS Ghế trẻ em Cảm biến lùi ETC Sạc điện thoại Camera 360 Quay lại Lưu nháp Tiếp tục PaceCar Nền tảng thuê xe dựa trên niềm tin, giúp mọi chuyến đi minh bạch và an toàn hơn. Khám phá Tìm xe Cách hoạt động Hỗ trợ tranh chấp Liên hệ hello@pacecar.vn 1900 1000 Hà Nội, Việt Nam"
+    },
+    "promotionModal": {
+      "url": "https://pacecarf.onrender.com/admin/promotions",
+      "h1": [
+        "Quản lý ưu đãi"
+      ],
+      "buttons": [
+        "",
+        "",
+        " Tạo ưu đãi",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Hủy",
+        "Lưu ưu đãi"
+      ],
+      "text": "PaceCar Tìm xe Vì sao PaceCar? Bảng điều khiển Thuê xe ngay KHÔNG GIAN Quản trị Tổng quan Đơn thuê xe Duyệt tin xe Quản lý ưu đãi Tài chính Cảnh báo rủi ro Hồ sơ VẬN HÀNH TĂNG TRƯỞNG Quản lý ưu đãi Tạo mã giảm giá, kiểm soát thời gian áp dụng và giới hạn lượt sử dụng. Tạo ưu đãi Tổng ưu đãi 2 Đang áp dụng 2 Đã lên lịch 0 Lượt đã dùng 0 Ưu đãi Mức giảm Điều kiện Lượt dùng Trạng thái Thao tác Khởi hành tiết kiệm PACECAR10 Giảm 10% tiền thuê cho đơn đủ điều kiện 10% Tối đa 300.000 ₫ Từ 1 ngày Đơn từ 1.000.000 ₫ Hết hạn 1/1/2028 0 / ∞ Đang áp dụng Cuối tuần rong chơi WEEKEND200 Giảm 200.000đ cho đơn từ 3 ngày 200.000 ₫ Từ 3 ngày Đơn từ 0 ₫ Hết hạn 1/1/2028 0 / ∞ Đang áp dụng Tạo ưu đãi Mã ưu đãi Tên chương trình Mô tả Loại giảm Theo phần trăm Số tiền cố định Giá trị Giảm tối đa (đ) Đơn tối thiểu (đ) Số ngày tối thiểu Giới hạn lượt dùng Bắt đầu (không bắt buộc) Hết hạn Bật ưu đãi sau khi lưu Hủy Lưu ưu đãi PaceCar Nền tảng thuê xe dựa trên niềm tin, giúp mọi chuyến đi minh bạch và an toàn hơn. Khám phá Tìm xe Cách hoạt động Hỗ trợ tranh chấp Liên hệ hello@pacecar.vn 1900 1000 Hà Nội, Việt Nam"
+    }
+  },
+  "errors": []
+}

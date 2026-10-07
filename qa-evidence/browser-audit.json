@@ -1,0 +1,1268 @@
+{
+  "startedAt": "2026-10-07T05:36:47.770Z",
+  "base": "https://pacecarf.onrender.com",
+  "events": {
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 401 ()",
+      "Failed to load resource: the server responded with a status of 403 ()",
+      "ReferenceError: date is not defined\n    at https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73917\n    at Array.map (<anonymous>)\n    at Hi (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73367)\n    at xo (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:47495)\n    at mc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:70002)\n    at jc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:80270)\n    at Mu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:115660)\n    at ku (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114741)\n    at Ou (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114579)\n    at gu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:111445)",
+      "PaceCar render error ReferenceError: date is not defined\n    at https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73917\n    at Array.map (<anonymous>)\n    at Hi (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73367)\n    at xo (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:47495)\n    at mc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:70002)\n    at jc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:80270)\n    at Mu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:115660)\n    at ku (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114741)\n    at Ou (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114579)\n    at gu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:111445) {componentStack: \n    at Hi (https://pacecarf.onrender.com/assets/i….onrender.com/assets/index-DevHAPqa.js:11:186626)}",
+      "ReferenceError: date is not defined\n    at https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73917\n    at Array.map (<anonymous>)\n    at Hi (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73367)\n    at xo (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:47495)\n    at mc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:70002)\n    at jc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:80270)\n    at Mu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:115660)\n    at ku (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114741)\n    at Ou (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114579)\n    at gu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:111445)",
+      "PaceCar render error ReferenceError: date is not defined\n    at https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73917\n    at Array.map (<anonymous>)\n    at Hi (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:11:73367)\n    at xo (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:47495)\n    at mc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:70002)\n    at jc (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:80270)\n    at Mu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:115660)\n    at ku (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114741)\n    at Ou (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:114579)\n    at gu (https://pacecarf.onrender.com/assets/index-DevHAPqa.js:8:111445) {componentStack: \n    at Hi (https://pacecarf.onrender.com/assets/i….onrender.com/assets/index-DevHAPqa.js:11:186626)}"
+    ],
+    "pageErrors": [],
+    "requestFailures": [
+      {
+        "url": "https://pacecarf.onrender.com/api/auth/logout",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://pacecarf.onrender.com/api/auth/logout",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://pacecarf.onrender.com/api/auth/logout",
+        "error": "net::ERR_ABORTED"
+      }
+    ],
+    "httpErrors": [
+      {
+        "status": 401,
+        "url": "https://pacecarf.onrender.com/api/auth/login"
+      },
+      {
+        "status": 403,
+        "url": "https://pacecarf.onrender.com/api/risk-alerts"
+      }
+    ]
+  },
+  "public": {
+    "home": {
+      "label": "home-desktop",
+      "url": "https://pacecarf.onrender.com/",
+      "title": "PaceCar — Thuê xe an toàn",
+      "h1": [
+        "Thuê xe minh bạch,\nan toàn hơn."
+      ],
+      "headings": [
+        "H1:Thuê xe minh bạch,\nan toàn hơn.",
+        "H2:Bắt đầu hành trình với giá tốt hơn",
+        "H3:Khởi hành tiết kiệm",
+        "H3:Cuối tuần rong chơi",
+        "H2:Thuê xe gần bạn",
+        "H2:Vì sao chọn PaceCar?",
+        "H3:Giá minh bạch",
+        "H3:Xe & chủ xe xác thực",
+        "H3:Hợp đồng số",
+        "H3:GPS & cảnh báo rủi ro",
+        "H3:Hỗ trợ tranh chấp 24–72h",
+        "H2:Thuê xe chỉ trong 5 bước",
+        "H2:Xe nổi bật",
+        "H3:Toyota Vios 2022",
+        "H3:Honda City 2021",
+        "H3:Mazda CX-5 2022"
+      ],
+      "buttons": [
+        "Tìm xe ngay",
+        "Đăng xe cho thuê",
+        "Tự lái",
+        "Có tài xế",
+        "Tìm xe"
+      ],
+      "links": [
+        {
+          "text": "PaceCar",
+          "href": "/"
+        },
+        {
+          "text": "Tìm xe",
+          "href": "/cars"
+        },
+        {
+          "text": "Vì sao PaceCar?",
+          "href": "/#why"
+        },
+        {
+          "text": "Đăng nhập",
+          "href": "/login"
+        },
+        {
+          "text": "Thuê xe ngay",
+          "href": "/cars"
+        },
+        {
+          "text": "Tìm xe ngay",
+          "href": "/cars"
+        },
+        {
+          "text": "Đăng xe cho thuê",
+          "href": "/login?role=owner&next=/owner/cars/new"
+        },
+        {
+          "text": "Khám phá xe",
+          "href": "/cars?promoCode=PACECAR10"
+        },
+        {
+          "text": "Khám phá xe",
+          "href": "/cars?promoCode=WEEKEND200"
+        },
+        {
+          "text": "Hà Đông\n\nKhám phá xe khả dụng",
+          "href": "/cars?location=H%C3%A0%20%C4%90%C3%B4ng%2C%20H%C3%A0%20N%E1%BB%99i"
+        },
+        {
+          "text": "Cầu Giấy\n\nKhám phá xe khả dụng",
+          "href": "/cars?location=C%E1%BA%A7u%20Gi%E1%BA%A5y%2C%20H%C3%A0%20N%E1%BB%99i"
+        },
+        {
+          "text": "Mỹ Đình\n\nKhám phá xe khả dụng",
+          "href": "/cars?location=M%E1%BB%B9%20%C4%90%C3%ACnh%2C%20H%C3%A0%20N%E1%BB%99i"
+        },
+        {
+          "text": "Hòa Lạc\n\nKhám phá xe khả dụng",
+          "href": "/cars?location=H%C3%B2a%20L%E1%BA%A1c%2C%20H%C3%A0%20N%E1%BB%99i"
+        },
+        {
+          "text": "Xem tất cả →",
+          "href": "/cars"
+        },
+        {
+          "text": "Xem chi tiết",
+          "href": "/cars/1"
+        },
+        {
+          "text": "Xem chi tiết",
+          "href": "/cars/2"
+        },
+        {
+          "text": "Xem chi tiết",
+          "href": "/cars/3"
+        },
+        {
+          "text": "Tìm xe",
+          "href": "/cars"
+        },
+        {
+          "text": "Cách hoạt động",
+          "href": "/#how-it-works"
+        },
+        {
+          "text": "Hỗ trợ tranh chấp",
+          "href": "/help"
+        },
+        {
+          "text": "hello@pacecar.vn",
+          "href": "mailto:hello@pacecar.vn"
+        },
+        {
+          "text": "1900 1000",
+          "href": "tel:19001000"
+        }
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Tìm xe ngay",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Đăng xe cho thuê",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "button",
+          "name": "Tự lái",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "button",
+          "name": "Có tài xế",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Địa điểm nhận xe Hà Nội Hà Đông, Hà Nội Cầu Giấy, Hà Nội Mỹ Đình, Hà Nội Hòa Lạc, Hà Nội",
+          "value": "Hà Nội"
+        },
+        {
+          "tag": "INPUT",
+          "type": "text",
+          "name": "Điểm đến dự kiến Không phải địa điểm nhận xe",
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "type": "date",
+          "name": "Ngày nhận xe",
+          "value": "2026-10-08"
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "Giờ nhận xe",
+          "value": "08:00"
+        },
+        {
+          "tag": "INPUT",
+          "type": "date",
+          "name": "Ngày trả xe",
+          "value": "2026-10-10"
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "Giờ trả xe",
+          "value": "20:00"
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Tìm xe",
+          "value": ""
+        }
+      ],
+      "unlabeledControls": [],
+      "imagesMissingAlt": 0,
+      "duplicateIds": [],
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "horizontalOverflow": false,
+      "overflowingElements": [
+        {
+          "tag": "DIV",
+          "className": "landing-orb absolute -right-32 -top-36 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl",
+          "right": 1567
+        }
+      ],
+      "textSample": "PaceCar Tìm xe Vì sao PaceCar? Đăng nhập Thuê xe ngay Nền tảng thuê xe dựa trên niềm tin Thuê xe minh bạch, an toàn hơn. PaceCar giúp người thuê và chủ xe giao dịch an toàn hơn thông qua xác thực, hợp đồng số, Trust Score và kiểm soát rủi ro. Tìm xe ngay Đăng xe cho thuê 10 Xe đang mở 4.7/5 Đánh giá TB 2 Ưu đãi hiện có Trust Score chủ xe 94/100 · Low Risk Tự lái Có tài xế Địa điểm nhận xe Hà Nội Hà Đông, Hà Nội Cầu Giấy, Hà Nội Mỹ Đình, Hà Nội Hòa Lạc, Hà Nội Điểm đến dự kiến Không phải địa điểm nhận xe Nhận xe Trả xe Tìm xe ƯU ĐÃI ĐANG CÓ Bắt đầu hành trình với giá tốt hơn MÃ PACECAR10 Khởi hành tiết kiệm Giảm 10% tiền thuê cho đơn đủ điều kiện Khám phá xe MÃ WEEKEND200 Cuối tuần rong chơi Giảm 200.000đ cho đơn từ 3 ngày Khám phá xe ĐIỂM ĐẾN PHỔ BIẾN Thuê xe gần bạn Hà Đông Khám phá xe khả dụng Cầu Giấy Khám phá xe khả dụng Mỹ Đình Khám phá xe khả dụng Hòa Lạc Khám phá xe khả dụng NIỀM TIN TẠO NÊN HÀNH TRÌNH Vì sao chọn PaceCar? Giá minh bạch Mọi chi phí được hiển thị trước khi đặt xe"
+    },
+    "keyboardFocusOrder": [
+      {
+        "tag": "A",
+        "text": "PaceCar"
+      },
+      {
+        "tag": "A",
+        "text": "Tìm xe"
+      },
+      {
+        "tag": "A",
+        "text": "Vì sao PaceCar?"
+      },
+      {
+        "tag": "A",
+        "text": "Đăng nhập"
+      },
+      {
+        "tag": "A",
+        "text": "Thuê xe ngay"
+      },
+      {
+        "tag": "A",
+        "text": "Tìm xe ngay"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tìm xe ngay"
+      },
+      {
+        "tag": "A",
+        "text": "Đăng xe cho thuê"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Đăng xe cho thuê"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tự lái"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Có tài xế"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Hà Nội Hà Đông, Hà Nội Cầu Giấy, Hà Nội Mỹ Đình, Hà Nội Hòa Lạc, Hà Nội"
+      },
+      {
+        "tag": "INPUT",
+        "text": ""
+      },
+      {
+        "tag": "INPUT",
+        "text": "Ngày nhận xe"
+      }
+    ],
+    "invalidSearch": {
+      "url": "https://pacecarf.onrender.com/",
+      "messageFound": true
+    },
+    "search": {
+      "label": "cars-search-results",
+      "url": "https://pacecarf.onrender.com/cars?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self",
+      "title": "PaceCar — Thuê xe an toàn",
+      "h1": [
+        "10 xe phù hợp"
+      ],
+      "headings": [
+        "H1:10 xe phù hợp",
+        "H2:Bộ lọc",
+        "H3:Toyota Camry 2021",
+        "H3:Hyundai Accent 2022",
+        "H3:Toyota Fortuner 2020",
+        "H3:Ford Everest 2022",
+        "H3:VinFast Lux A2.0",
+        "H3:Mazda CX-5 2022",
+        "H3:Toyota Vios 2022",
+        "H3:Mitsubishi Xpander 2021",
+        "H3:Kia Carnival 2023",
+        "H3:Honda City 2021"
+      ],
+      "buttons": [
+        "Tự lái",
+        "Có tài xế",
+        "Tìm xe",
+        "Đặt lại",
+        "Lưu Toyota Camry 2021 vào yêu thích",
+        "Lưu Hyundai Accent 2022 vào yêu thích",
+        "Lưu Toyota Fortuner 2020 vào yêu thích",
+        "Lưu Ford Everest 2022 vào yêu thích",
+        "Lưu VinFast Lux A2.0 vào yêu thích",
+        "Lưu Mazda CX-5 2022 vào yêu thích",
+        "Lưu Toyota Vios 2022 vào yêu thích",
+        "Lưu Mitsubishi Xpander 2021 vào yêu thích",
+        "Lưu Kia Carnival 2023 vào yêu thích",
+        "Lưu Honda City 2021 vào yêu thích"
+      ],
+      "links": [
+        {
+          "text": "PaceCar",
+          "href": "/"
+        },
+        {
+          "text": "Tìm xe",
+          "href": "/cars"
+        },
+        {
+          "text": "Vì sao PaceCar?",
+          "href": "/#why"
+        },
+        {
+          "text": "Đăng nhập",
+          "href": "/login"
+        },
+        {
+          "text": "Thuê xe ngay",
+          "href": "/cars"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/10?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/7?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/4?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/9?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/6?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/3?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/1?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/8?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/5?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Xem xe & báo giá",
+          "href": "/cars/2?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self"
+        },
+        {
+          "text": "Tìm xe",
+          "href": "/cars"
+        },
+        {
+          "text": "Cách hoạt động",
+          "href": "/#how-it-works"
+        },
+        {
+          "text": "Hỗ trợ tranh chấp",
+          "href": "/help"
+        },
+        {
+          "text": "hello@pacecar.vn",
+          "href": "mailto:hello@pacecar.vn"
+        },
+        {
+          "text": "1900 1000",
+          "href": "tel:19001000"
+        }
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "button",
+          "name": "Tự lái",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "button",
+          "name": "Có tài xế",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Địa điểm nhận xe Hà Nội Hà Đông, Hà Nội Cầu Giấy, Hà Nội Mỹ Đình, Hà Nội Hòa Lạc, Hà Nội",
+          "value": "Hà Nội"
+        },
+        {
+          "tag": "INPUT",
+          "type": "text",
+          "name": "Điểm đến dự kiến Không phải địa điểm nhận xe",
+          "value": "Hải Phòng"
+        },
+        {
+          "tag": "INPUT",
+          "type": "date",
+          "name": "Ngày nhận xe",
+          "value": "2027-11-05"
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "Giờ nhận xe",
+          "value": "08:00"
+        },
+        {
+          "tag": "INPUT",
+          "type": "date",
+          "name": "Ngày trả xe",
+          "value": "2027-11-07"
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "Giờ trả xe",
+          "value": "20:00"
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Tìm xe",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Sắp xếp kết quả",
+          "value": "recommended"
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Đặt lại",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Loại xe Tất cả Sedan SUV MPV Hatchback",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Số chỗ tối thiểu Tất cả 4 chỗ 5 chỗ 7 chỗ",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Hộp số Tất cả Tự động Số sàn",
+          "value": ""
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Nhiên liệu Tất cả Xăng Dầu Điện Hybrid",
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "type": "number",
+          "name": "Giá thuê tối thiểu mỗi ngày",
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "type": "number",
+          "name": "Giá thuê tối đa mỗi ngày",
+          "value": ""
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "Giao xe tận nơi",
+          "value": "on"
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "Đặt xe nhanh",
+          "value": "on"
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Toyota Camry 2021 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Hyundai Accent 2022 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Toyota Fortuner 2020 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Ford Everest 2022 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu VinFast Lux A2.0 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Mazda CX-5 2022 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Toyota Vios 2022 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Mitsubishi Xpander 2021 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Kia Carnival 2023 vào yêu thích",
+          "value": ""
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Lưu Honda City 2021 vào yêu thích",
+          "value": ""
+        }
+      ],
+      "unlabeledControls": [],
+      "imagesMissingAlt": 0,
+      "duplicateIds": [],
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "horizontalOverflow": false,
+      "overflowingElements": [],
+      "textSample": "PaceCar Tìm xe Vì sao PaceCar? Đăng nhập Thuê xe ngay Tự lái Có tài xế Địa điểm nhận xe Hà Nội Hà Đông, Hà Nội Cầu Giấy, Hà Nội Mỹ Đình, Hà Nội Hòa Lạc, Hà Nội Điểm đến dự kiến Không phải địa điểm nhận xe Nhận xe Trả xe Tìm xe XE KHẢ DỤNG 10 xe phù hợp Giá dự kiến theo lịch trình, đã kiểm tra lịch trống phía backend. PaceCar đề xuất Giá thấp đến cao Giá cao đến thấp Đánh giá cao nhất Bộ lọc Đặt lại Loại xe Tất cả Sedan SUV MPV Hatchback Số chỗ tối thiểu Tất cả 4 chỗ 5 chỗ 7 chỗ Hộp số Tất cả Tự động Số sàn Nhiên liệu Tất cả Xăng Dầu Điện Hybrid Khoảng giá/ngày Giao xe tận nơi Đặt xe nhanh Giao xe Toyota Camry 2021 4.7 Nội thành Hà Nội · 7 chỗ · Tự động Trust 94 75 chuyến 1.460.000 ₫/ngày Tạm tính 3 ngày 4.380.000 ₫ Xem xe & báo giá Giao xe Hyundai Accent 2022 4.8 Hòa Lạc, Hà Nội · 7 chỗ · Tự động Trust 94 54 chuyến 1.190.000 ₫/ngày Tạm tính 3 ngày 3.570.000 ₫ Xem xe & báo giá Giao xe Toyota Fortuner 2020 4.9 Mỹ Đình, Hà Nội · 7 chỗ · Tự động Trust 94 33 chuyến 920.000 ₫/ngày Tạm tính 3",
+      "resultCards": 10
+    },
+    "sortUrl": "https://pacecarf.onrender.com/cars?location=H%C3%A0+N%E1%BB%99i&destination=H%E1%BA%A3i+Ph%C3%B2ng&startDate=2027-11-05&startTime=08%3A00&endDate=2027-11-07&endTime=20%3A00&driverOption=self&sort=price-asc"
+  },
+  "responsive": [
+    {
+      "width": 1920,
+      "route": "/",
+      "horizontalOverflow": false,
+      "overflowingElements": [
+        {
+          "tag": "DIV",
+          "className": "landing-orb absolute -right-32 -top-36 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl",
+          "right": 2047
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "horizontalOverflow": false,
+      "overflowingElements": [
+        {
+          "tag": "DIV",
+          "className": "landing-orb absolute -right-32 -top-36 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl",
+          "right": 1567
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "route": "/",
+      "horizontalOverflow": false,
+      "overflowingElements": [
+        {
+          "tag": "DIV",
+          "className": "landing-orb absolute -right-32 -top-36 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl",
+          "right": 1151
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "route": "/",
+      "horizontalOverflow": false,
+      "overflowingElements": [
+        {
+          "tag": "DIV",
+          "className": "landing-orb absolute -right-32 -top-36 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl",
+          "right": 895
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "route": "/",
+      "horizontalOverflow": true,
+      "overflowingElements": [
+        {
+          "tag": "DIV",
+          "className": "landing-orb absolute -right-32 -top-36 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl",
+          "right": 557
+        },
+        {
+          "tag": "FIELDSET",
+          "className": "",
+          "right": 492
+        },
+        {
+          "tag": "SPAN",
+          "className": "label",
+          "right": 492
+        },
+        {
+          "tag": "DIV",
+          "className": "flex gap-2",
+          "right": 492
+        },
+        {
+          "tag": "INPUT",
+          "className": "input w-[92px] px-2",
+          "right": 492
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "invalidLogin": {
+      "stayedOnLogin": true,
+      "errorText": [
+        "Mật khẩu",
+        "Email hoặc mật khẩu không đúng"
+      ]
+    },
+    "renterLogin": {
+      "email": "renter@pacecar.vn",
+      "url": "https://pacecarf.onrender.com/dashboard/renter",
+      "text": "PaceCar\nTìm xe\nVì sao PaceCar?\nBảng điều khiển\n1\nThuê xe ngay\n\nKHÔNG GIAN\n\nNgười thuê\n\nTổng quan\nĐơn thuê xe\nXe yêu thích\nTrust Score\nKhám phá xe\nHồ sơ\n\nBẢNG ĐIỀU KHIỂN NGƯỜI THUÊ\n\nXin chào, Nguyễn Minh An\n\nQuản lý hành trình, hợp đồng và Trust Score của bạn.\n\n● Backend đã kết nối · Đồng bộ lúc 12:37:10\nLàm mới dữ liệu\n\nTrust Score\n\n88/100\n\nRule-based · MVP version\n\nChuyến đang hoạt động\n\n1\n\nChuyến hoàn thành\n\n1\n\nCác chuyến xe của tôi\nToyota Vios 2022\nPending\n\n14/7/2026 – 16/7/2026 · 1.820.000 ₫\n\nHonda City 2021\nCompleted\n\n20/6/2026 – 22/6/2026 · 2.050.000 ₫\n\nHợp đồng\nBằng chứng\nVinFast Lux A2.0\nOngoing\n\n11/7/2026 – 13/7/2026 · 2.600.000 ₫\n\nHợp đồng\nBằng chứng\nHỗ trợ\n88\nTrust Score của bạn\n\nĐiểm theo quy tắc minh bạch của MVP, không sử dụng AI.\n\n✓ Xác thực danh tính\n+20\n✓ Số điện thoại\n+10"
+    },
+    "renterRoutes": [
+      {
+        "requested": "/dashboard/renter",
+        "status": 200,
+        "final": "/dashboard/renter",
+        "h1": [
+          "Xin chào, Nguyễn Minh An"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Làm mới dữ liệu",
+          "Hợp đồng",
+          "Bằng chứng",
+          "Hợp đồng",
+          "Bằng chứng",
+          "Hỗ trợ"
+        ]
+      },
+      {
+        "requested": "/bookings",
+        "status": 200,
+        "final": "/bookings",
+        "h1": [
+          "Đơn thuê xe"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Tất cả",
+          "Pending",
+          "Accepted",
+          "Ongoing",
+          "Completed",
+          "Rejected",
+          "Dispute",
+          "Hủy yêu cầu",
+          "Hợp đồng",
+          "Giao nhận",
+          "Hợp đồng",
+          "Giao nhận",
+          "Đánh giá"
+        ]
+      },
+      {
+        "requested": "/favorites",
+        "status": 200,
+        "final": "/favorites",
+        "h1": [
+          "Xe yêu thích"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất"
+        ]
+      },
+      {
+        "requested": "/profile",
+        "status": 200,
+        "final": "/profile",
+        "h1": [
+          "Hồ sơ cá nhân"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Lưu thay đổi"
+        ]
+      },
+      {
+        "requested": "/risk-alerts",
+        "status": 200,
+        "final": "/risk-alerts",
+        "h1": [],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Thử lại"
+        ]
+      },
+      {
+        "requested": "/dashboard/owner",
+        "status": 200,
+        "final": "/dashboard/renter",
+        "h1": [
+          "Xin chào, Nguyễn Minh An"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Làm mới dữ liệu",
+          "Hợp đồng",
+          "Bằng chứng",
+          "Hợp đồng",
+          "Bằng chứng",
+          "Hỗ trợ"
+        ]
+      }
+    ],
+    "afterRenterLogout": "/",
+    "ownerLogin": {
+      "email": "owner@pacecar.vn",
+      "url": "https://pacecarf.onrender.com/dashboard/owner",
+      "text": "PaceCar\nTìm xe\nVì sao PaceCar?\nBảng điều khiển\n2\nĐăng xe cho thuê\n\nKHÔNG GIAN\n\nChủ xe\n\nTổng quan\nĐơn thuê xe\nXe của tôi\nĐăng xe cho thuê\nTài chính\nCảnh báo rủi ro\nHồ sơ\n\nBẢNG ĐIỀU KHIỂN CHỦ XE\n\nXin chào, Phạm Đức Long\n\nTheo dõi đội xe, doanh thu và yêu cầu thuê mới.\n\n+ Đăng xe mới\n● Backend đã kết nối · Đồng bộ lúc 12:37:19\nLàm mới dữ liệu\n\nDoanh thu đã hoàn tất\n\n0 ₫\n\nXe đang công khai\n\n4\n\nYêu cầu mới\n\n1\n\nTrust Score\n\n94\n\nYêu cầu thuê xe\nToyota Vios 2022\nPending\n\nNguyễn Minh An · 14/7/2026 – 16/7/2026 · 1.820.000 ₫\n\nTrust 88\nLow Risk\nChấp nhận\nTừ chối\nToyota Fortuner 2020\nAccepted\n\nTrần Thu Hà · 18/7/2026 – 21/7/2026 · 3.680.000 ₫\n\nTrust 76\nMedium Risk\nHợp đồng\nHyundai Accent 2022\nDispute\n\nLê Hoàng Nam · 20/7/2026 – 30/7/2026 · 12.500.000 ₫\n\nTrust 48\nHigh Risk\nHợp đồng\nBằng chứng\nHỗ trợ\nCả"
+    },
+    "ownerRoutes": [
+      {
+        "requested": "/dashboard/owner",
+        "status": 200,
+        "final": "/dashboard/owner",
+        "h1": [
+          "Xin chào, Phạm Đức Long"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "+ Đăng xe mới",
+          "Làm mới dữ liệu",
+          "Chấp nhận",
+          "Từ chối",
+          "Hợp đồng",
+          "Hợp đồng",
+          "Bằng chứng",
+          "Hỗ trợ"
+        ]
+      },
+      {
+        "requested": "/bookings",
+        "status": 200,
+        "final": "/bookings",
+        "h1": [
+          "Đơn thuê xe"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Tất cả",
+          "Pending",
+          "Accepted",
+          "Ongoing",
+          "Completed",
+          "Rejected",
+          "Dispute",
+          "Chấp nhận",
+          "Từ chối",
+          "Hợp đồng",
+          "Hợp đồng",
+          "Giao nhận"
+        ]
+      },
+      {
+        "requested": "/owner/cars",
+        "status": 200,
+        "final": "/owner/cars",
+        "h1": [
+          "Xe và tin đăng của tôi"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Đăng xe mới",
+          "Tất cả",
+          "Draft",
+          "Pending Review",
+          "Published",
+          "Paused",
+          "Rejected",
+          "Xem công khai",
+          "Tạm dừng",
+          "Xem công khai",
+          "Tạm dừng",
+          "Xem công khai",
+          "Tạm dừng",
+          "Xem công khai",
+          "Tạm dừng"
+        ]
+      },
+      {
+        "requested": "/owner/cars/new",
+        "status": 200,
+        "final": "/owner/cars/new",
+        "h1": [
+          "Đăng xe cho thuê"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "1\nNhận diện xe",
+          "2\nThông số",
+          "3\nGiá & quy định",
+          "4\nẢnh & giấy tờ",
+          "5\nXem lại",
+          "Quay lại",
+          "Lưu nháp",
+          "Tiếp tục"
+        ]
+      },
+      {
+        "requested": "/profile",
+        "status": 200,
+        "final": "/profile",
+        "h1": [
+          "Hồ sơ cá nhân"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Lưu thay đổi"
+        ]
+      },
+      {
+        "requested": "/risk-alerts",
+        "status": 200,
+        "final": "/risk-alerts",
+        "h1": [
+          "Ứng dụng gặp sự cố"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Khởi động lại ứng dụng"
+        ]
+      },
+      {
+        "requested": "/dashboard/admin",
+        "status": 200,
+        "final": "/dashboard/owner",
+        "h1": [
+          "Xin chào, Phạm Đức Long"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "+ Đăng xe mới",
+          "Làm mới dữ liệu",
+          "Chấp nhận",
+          "Từ chối",
+          "Hợp đồng",
+          "Hợp đồng",
+          "Bằng chứng",
+          "Hỗ trợ"
+        ]
+      }
+    ],
+    "adminLogin": {
+      "email": "admin@pacecar.vn",
+      "url": "https://pacecarf.onrender.com/dashboard/admin",
+      "text": "PaceCar\nTìm xe\nVì sao PaceCar?\nBảng điều khiển\nThuê xe ngay\n\nKHÔNG GIAN\n\nQuản trị\n\nTổng quan\nĐơn thuê xe\nDuyệt tin xe\nQuản lý ưu đãi\nTài chính\nCảnh báo rủi ro\nHồ sơ\n\nPACECAR OPERATIONS\n\nTrung tâm quản trị\n\nTổng quan vận hành, rủi ro và giao dịch trên nền tảng.\n\n● Backend đã kết nối · Đồng bộ lúc 12:37:29\nLàm mới dữ liệu\n\nNgười dùng\n\n7\n\nXe\n\n10\n\nĐơn thuê\n\n8\n\nPhí đã ghi nhận\n\n600.000 ₫\n\nTranh chấp chờ\n\n1\n\nĐơn thuê gần đây\nMã\tXe\tGiá trị\tTrạng thái\n#PC1\tToyota Vios 2022\t1.820.000 ₫\t\nPending\nAccepted\nRejected\nOngoing\nCompleted\nDispute\n\n#PC2\tToyota Fortuner 2020\t3.680.000 ₫\t\nPending\nAccepted\nRejected\nOngoing\nCompleted\nDispute\n\n#PC3\tHonda City 2021\t2.050.000 ₫\t\nPending\nAccepted\nRejected\nOngoing\nCompleted\nDispute\n\n#PC4\tHyundai Accent 2022\t12.500.000 ₫\t\nPending\nAccepted\nRejected\nOngoing\nCompleted\nDi"
+    },
+    "adminRoutes": [
+      {
+        "requested": "/dashboard/admin",
+        "status": 200,
+        "final": "/dashboard/admin",
+        "h1": [
+          "Trung tâm quản trị"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Làm mới dữ liệu"
+        ]
+      },
+      {
+        "requested": "/admin/car-approvals",
+        "status": 200,
+        "final": "/admin/car-approvals",
+        "h1": [
+          "Duyệt tin đăng xe"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Pending Review",
+          "Published",
+          "Rejected"
+        ]
+      },
+      {
+        "requested": "/admin/promotions",
+        "status": 200,
+        "final": "/admin/promotions",
+        "h1": [
+          "Quản lý ưu đãi"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Tạo ưu đãi",
+          "Sửa PACECAR10",
+          "Tắt PACECAR10",
+          "Lưu trữ PACECAR10",
+          "Sửa WEEKEND200",
+          "Tắt WEEKEND200",
+          "Lưu trữ WEEKEND200"
+        ]
+      },
+      {
+        "requested": "/bookings",
+        "status": 200,
+        "final": "/bookings",
+        "h1": [
+          "Đơn thuê xe"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Tất cả",
+          "Pending",
+          "Accepted",
+          "Ongoing",
+          "Completed",
+          "Rejected",
+          "Dispute",
+          "Hợp đồng",
+          "Hợp đồng",
+          "Giao nhận",
+          "Hợp đồng",
+          "Giao nhận",
+          "Hợp đồng",
+          "Giao nhận",
+          "Hợp đồng",
+          "Giao nhận"
+        ]
+      },
+      {
+        "requested": "/profile",
+        "status": 200,
+        "final": "/profile",
+        "h1": [
+          "Hồ sơ cá nhân"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Lưu thay đổi"
+        ]
+      },
+      {
+        "requested": "/risk-alerts",
+        "status": 200,
+        "final": "/risk-alerts",
+        "h1": [
+          "Ứng dụng gặp sự cố"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Khởi động lại ứng dụng"
+        ]
+      },
+      {
+        "requested": "/dashboard/renter",
+        "status": 200,
+        "final": "/dashboard/admin",
+        "h1": [
+          "Trung tâm quản trị"
+        ],
+        "horizontalOverflow": false,
+        "buttons": [
+          "Thông báo",
+          "Đăng xuất",
+          "Làm mới dữ liệu"
+        ]
+      }
+    ]
+  },
+  "routeChecks": [
+    {
+      "route": "/help",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/help",
+      "h1": [
+        "Giải quyết sự cố dựa trên bằng chứng"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "route": "/does-not-exist",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/does-not-exist",
+      "h1": [
+        "Không tìm thấy trang"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "route": "/profile",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/login?next=%2Fprofile",
+      "h1": [
+        "Chào mừng trở lại"
+      ],
+      "horizontalOverflow": false
+    },
+    {
+      "route": "/",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/",
+      "h1": [
+        "Thuê xe minh bạch,an toàn hơn."
+      ]
+    },
+    {
+      "route": "/cars",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars?location=H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self",
+      "h1": [
+        "10 xe phù hợp"
+      ]
+    },
+    {
+      "route": "/#why",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/#why",
+      "h1": [
+        "Thuê xe minh bạch,an toàn hơn."
+      ]
+    },
+    {
+      "route": "/login",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/login",
+      "h1": [
+        "Chào mừng trở lại"
+      ]
+    },
+    {
+      "route": "/login?role=owner&next=/owner/cars/new",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/login?role=owner&next=/owner/cars/new",
+      "h1": [
+        "Chào mừng trở lại"
+      ]
+    },
+    {
+      "route": "/cars?promoCode=PACECAR10",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars?promoCode=PACECAR10&location=H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self",
+      "h1": [
+        "10 xe phù hợp"
+      ]
+    },
+    {
+      "route": "/cars?promoCode=WEEKEND200",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars?promoCode=WEEKEND200&location=H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self",
+      "h1": [
+        "10 xe phù hợp"
+      ]
+    },
+    {
+      "route": "/cars?location=H%C3%A0%20%C4%90%C3%B4ng%2C%20H%C3%A0%20N%E1%BB%99i",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars?location=H%C3%A0+%C4%90%C3%B4ng%2C+H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self",
+      "h1": [
+        "2 xe phù hợp"
+      ]
+    },
+    {
+      "route": "/cars?location=C%E1%BA%A7u%20Gi%E1%BA%A5y%2C%20H%C3%A0%20N%E1%BB%99i",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars?location=C%E1%BA%A7u+Gi%E1%BA%A5y%2C+H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self",
+      "h1": [
+        "2 xe phù hợp"
+      ]
+    },
+    {
+      "route": "/cars?location=M%E1%BB%B9%20%C4%90%C3%ACnh%2C%20H%C3%A0%20N%E1%BB%99i",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars?location=M%E1%BB%B9+%C4%90%C3%ACnh%2C+H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self",
+      "h1": [
+        "2 xe phù hợp"
+      ]
+    },
+    {
+      "route": "/cars?location=H%C3%B2a%20L%E1%BA%A1c%2C%20H%C3%A0%20N%E1%BB%99i",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars?location=H%C3%B2a+L%E1%BA%A1c%2C+H%C3%A0+N%E1%BB%99i&destination=&startDate=2026-10-08&startTime=08%3A00&endDate=2026-10-10&endTime=20%3A00&driverOption=self",
+      "h1": [
+        "2 xe phù hợp"
+      ]
+    },
+    {
+      "route": "/cars/1",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars/1",
+      "h1": [
+        "Toyota Vios 2022"
+      ]
+    },
+    {
+      "route": "/cars/2",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars/2",
+      "h1": [
+        "Honda City 2021"
+      ]
+    },
+    {
+      "route": "/cars/3",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/cars/3",
+      "h1": [
+        "Mazda CX-5 2022"
+      ]
+    },
+    {
+      "route": "/#how-it-works",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/#how-it-works",
+      "h1": [
+        "Thuê xe minh bạch,an toàn hơn."
+      ]
+    },
+    {
+      "route": "/help",
+      "status": 200,
+      "finalUrl": "https://pacecarf.onrender.com/help",
+      "h1": [
+        "Giải quyết sự cố dựa trên bằng chứng"
+      ]
+    }
+  ],
+  "performance": {
+    "wallMs": 4337,
+    "dnsMs": 2086,
+    "connectMs": 73,
+    "ttfbMs": 84,
+    "domContentLoadedMs": 2817,
+    "loadMs": 2819,
+    "transferSize": 683,
+    "decodedBodySize": 653,
+    "paints": {
+      "first-paint": 2828,
+      "first-contentful-paint": 3208
+    },
+    "resourceCount": 10,
+    "scriptBytes": 117879,
+    "cssBytes": 7214,
+    "imageCount": 5,
+    "imageBytes": 414413
+  },
+  "finishedAt": "2026-10-07T05:37:55.179Z"
+}
