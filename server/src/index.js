@@ -47,7 +47,8 @@ const publicUser = (user) =>
   user &&
   Object.fromEntries(
     Object.entries(user).filter(
-      ([key]) => !["password", "passwordHash"].includes(key),
+      ([key]) =>
+        !["password", "passwordHash", "consents"].includes(key),
     ),
   );
 const publicOwnerSummary = (user) =>
@@ -72,6 +73,20 @@ const publicCar = (car) => {
     licensePlate: car.licensePlate
       ? `***${String(car.licensePlate).slice(-5)}`
       : undefined,
+  };
+};
+const publicReviewSummary = (data, carId) => {
+  const reviews = data.reviews.filter((review) => review.carId === carId);
+  return {
+    reviewCount: reviews.length,
+    rating: reviews.length
+      ? Number(
+          (
+            reviews.reduce((total, review) => total + Number(review.rating), 0) /
+            reviews.length
+          ).toFixed(1),
+        )
+      : null,
   };
 };
 const bookingCarFor = (user, car) =>
@@ -873,34 +888,67 @@ app.post("/api/auth/register", registerLimiter, (q, s) => {
     password = String(q.body.password || ""),
     phone = String(q.body.phone || "").trim(),
     role = String(q.body.role || "");
-  if (!name || !email || !password)
-    return s
-      .status(400)
-      .json({ message: "Vui lòng nhập đủ họ tên, email và mật khẩu" });
-  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email))
-    return s.status(400).json({ message: "Email không hợp lệ" });
+  const fields = {};
+  if (!name) fields.name = "Vui lòng nhập họ tên.";
+  else if (name.length > 120)
+    fields.name = "Họ tên không được vượt quá 120 ký tự.";
+  if (!email) fields.email = "Vui lòng nhập email.";
+  else if (
+    email.length > 254 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)
+  )
+    fields.email = "Email không hợp lệ.";
   if (password.length < 8 || password.length > 128)
-    return s.status(400).json({
-      message: "Mật khẩu phải có từ 8 đến 128 ký tự",
-    });
+    fields.password = "Mật khẩu phải có từ 8 đến 128 ký tự.";
+  if (
+    !phone ||
+    phone.length > 30 ||
+    !/^\+?[\d\s().-]+$/u.test(phone) ||
+    phone.replace(/\D/gu, "").length < 9 ||
+    phone.replace(/\D/gu, "").length > 15
+  )
+    fields.phone = "Số điện thoại phải có từ 9 đến 15 chữ số.";
   if (!["renter", "owner"].includes(role))
-    return s.status(400).json({ message: "Vai trò đăng ký không hợp lệ" });
+    fields.role = "Vai trò đăng ký không hợp lệ.";
+  if (q.body.acceptTerms !== true)
+    fields.acceptTerms = "Bạn cần đồng ý với điều khoản để tiếp tục.";
+  if (Object.keys(fields).length)
+    return s.status(400).json({
+      message: "Vui lòng kiểm tra lại thông tin đăng ký.",
+      fields,
+    });
   if (d.users.some((x) => String(x.email).toLowerCase() === email))
-    return s.status(409).json({ message: "Email đã tồn tại" });
+    return s.status(409).json({
+      message: "Email đã tồn tại.",
+      fields: { email: "Email này đã được sử dụng." },
+    });
+  const now = new Date();
+  const token = crypto.randomBytes(32).toString("hex");
   const u = {
     id: nextId(d.users),
     name: name.slice(0, 120),
     email,
-    phone: phone.slice(0, 30),
+    phone,
     role,
     verified: false,
     trustScore: 50,
     riskLevel: "Medium",
     passwordHash: hashPassword(password),
+    consents: {
+      termsVersion: "pacecar-demo-2026-10-07",
+      acceptedAt: now.toISOString(),
+    },
   };
   d.users.push(u);
+  d.sessions.push({
+    id: nextId(d.sessions),
+    userId: u.id,
+    tokenHash: tokenHash(token),
+    createdAt: now.toISOString(),
+    expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  });
   write(d);
-  s.status(201).json(publicUser(u));
+  s.status(201).json({ ...publicUser(u), token });
 });
 app.get("/api/cars", (req, res) => {
   const data = read();
@@ -916,8 +964,7 @@ app.get("/api/cars", (req, res) => {
     cars.map((car) => ({
       ...publicCar(car),
       owner: publicOwnerSummary(find(data.users, car.ownerId)),
-      reviewCount: data.reviews.filter((review) => review.carId === car.id)
-        .length,
+      ...publicReviewSummary(data, car.id),
     })),
   );
 });
@@ -987,14 +1034,12 @@ app.get("/api/search/cars", (req, res) => {
   let items = cars.map((car) => {
     const owner = find(data.users, car.ownerId),
       days = periodStart && periodEnd ? rentalDays(periodStart, periodEnd) : 1,
-      reviewCount = data.reviews.filter(
-        (review) => review.carId === car.id,
-      ).length;
+      reviewSummary = publicReviewSummary(data, car.id);
     return {
       ...publicCar(car),
       owner: publicOwnerSummary(owner),
       favorite: favoriteIds.has(car.id),
-      reviewCount,
+      ...reviewSummary,
       estimatedDays: days,
       estimatedTotal: days * Number(car.pricePerDay),
     };
@@ -1002,7 +1047,8 @@ app.get("/api/search/cars", (req, res) => {
   if (sort === "price-asc") items.sort((a, b) => a.pricePerDay - b.pricePerDay);
   else if (sort === "price-desc")
     items.sort((a, b) => b.pricePerDay - a.pricePerDay);
-  else if (sort === "rating") items.sort((a, b) => b.rating - a.rating);
+  else if (sort === "rating")
+    items.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1));
   else
     items.sort(
       (a, b) =>
@@ -1192,8 +1238,7 @@ app.get(
         .map((car) => ({
           ...publicCar(car),
           owner: publicOwnerSummary(find(data.users, car.ownerId)),
-          reviewCount: data.reviews.filter((review) => review.carId === car.id)
-            .length,
+          ...publicReviewSummary(data, car.id),
           favorite: true,
         })),
     );
@@ -1421,6 +1466,7 @@ app.get("/api/cars/:id", (q, s) => {
   const isPrivate = viewer?.role === "admin" || viewer?.id === c.ownerId;
   s.json({
     ...(isPrivate ? c : publicCar(c)),
+    ...(!isPrivate ? publicReviewSummary(d, c.id) : {}),
     favorite: Boolean(
       viewer &&
       d.favorites.some(

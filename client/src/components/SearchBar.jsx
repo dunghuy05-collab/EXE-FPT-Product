@@ -14,6 +14,13 @@ const isoDate = (offset = 0) => {
   date.setDate(date.getDate() + offset);
   return formatLocalDate(date);
 };
+const locations = [
+  "Hà Nội",
+  "Hà Đông, Hà Nội",
+  "Cầu Giấy, Hà Nội",
+  "Mỹ Đình, Hà Nội",
+  "Hòa Lạc, Hà Nội",
+];
 export default function SearchBar({ compact = false }) {
   const nav = useNavigate(),
     toast = useToast(),
@@ -114,8 +121,8 @@ export default function SearchBar({ compact = false }) {
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-[1.1fr_1fr_1.25fr_1.25fr_auto]">
-        <label className="relative col-span-2 lg:col-span-1">
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_1.25fr_1.25fr_auto]">
+        <label className="relative min-w-0 sm:col-span-2 lg:col-span-1">
           <span className="label">
             <MapPin className="mr-1 inline" size={16} />
             Địa điểm nhận xe
@@ -125,14 +132,17 @@ export default function SearchBar({ compact = false }) {
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
           >
-            <option>Hà Nội</option>
-            <option>Hà Đông, Hà Nội</option>
-            <option>Cầu Giấy, Hà Nội</option>
-            <option>Mỹ Đình, Hà Nội</option>
-            <option>Hòa Lạc, Hà Nội</option>
+            {!locations.includes(form.location) && (
+              <option value={form.location}>
+                Khu vực hiện tại: {form.location}
+              </option>
+            )}
+            {locations.map((location) => (
+              <option key={location}>{location}</option>
+            ))}
           </select>
         </label>
-        <label className="relative col-span-2 lg:col-span-1">
+        <label className="relative min-w-0 sm:col-span-2 lg:col-span-1">
           <span className="label">
             <MapPin className="mr-1 inline" size={16} />
             Điểm đến dự kiến
@@ -147,18 +157,18 @@ export default function SearchBar({ compact = false }) {
             Không phải địa điểm nhận xe
           </span>
         </label>
-        <fieldset>
+        <fieldset className="min-w-0">
           <span className="label">
             <CalendarDays className="mr-1 inline" size={16} />
             Nhận xe
           </span>
-          <div className="flex gap-2">
+          <div className="flex min-w-0 gap-2">
             <input
               aria-label="Ngày nhận xe"
               type="date"
               min={isoDate(0)}
               required
-              className="input min-w-0 px-2"
+              className="input min-w-0 flex-1 px-2"
               value={form.startDate}
               onChange={(e) => {
                 const startDate = e.target.value;
@@ -176,24 +186,24 @@ export default function SearchBar({ compact = false }) {
               aria-label="Giờ nhận xe"
               type="time"
               required
-              className="input w-[92px] px-2"
+              className="input min-w-0 flex-1 px-2"
               value={form.startTime}
               onChange={(e) => setForm({ ...form, startTime: e.target.value })}
             />
           </div>
         </fieldset>
-        <fieldset>
+        <fieldset className="min-w-0">
           <span className="label">
             <CalendarDays className="mr-1 inline" size={16} />
             Trả xe
           </span>
-          <div className="flex gap-2">
+          <div className="flex min-w-0 gap-2">
             <input
               aria-label="Ngày trả xe"
               type="date"
               min={form.startDate || isoDate(0)}
               required
-              className="input min-w-0 px-2"
+              className="input min-w-0 flex-1 px-2"
               value={form.endDate}
               onChange={(e) => setForm({ ...form, endDate: e.target.value })}
             />
@@ -201,13 +211,13 @@ export default function SearchBar({ compact = false }) {
               aria-label="Giờ trả xe"
               type="time"
               required
-              className="input w-[92px] px-2"
+              className="input min-w-0 flex-1 px-2"
               value={form.endTime}
               onChange={(e) => setForm({ ...form, endTime: e.target.value })}
             />
           </div>
         </fieldset>
-        <Button className="col-span-2 mt-auto h-[50px] px-7 lg:col-span-1">
+        <Button className="col-span-1 mt-auto h-[50px] px-7 sm:col-span-2 lg:col-span-1">
           <Search size={18} />
           Tìm xe
         </Button>

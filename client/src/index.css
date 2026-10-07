@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,12 +7,17 @@
   }
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
   }
   body {
     margin: 0;
     font-family: "Be Vietnam Pro", sans-serif;
     color: #0f172a;
-    background: #f8fafc;
+    background:
+      radial-gradient(ellipse at 12% 0%, rgba(56, 108, 245, 0.055), transparent 35rem),
+      #f7f8fb;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   button,
   input,
@@ -21,25 +25,65 @@
   textarea {
     font: inherit;
   }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 3px solid #f7b938;
+    outline-offset: 3px;
+  }
+  ::selection {
+    color: #fff;
+    background: #2452df;
+  }
 }
 @layer components {
   .container-app {
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-soft;
+    @apply rounded-card border border-slate-200/80 bg-white shadow-soft;
   }
   .input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500;
   }
   .label {
     @apply mb-2 block text-sm font-semibold text-slate-700;
   }
   .section-title {
-    @apply text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl;
+    @apply text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl;
   }
   .muted {
     @apply text-slate-500;
+  }
+  .surface-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, black, transparent 90%);
+  }
+  .btn-motion {
+    transition:
+      transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 180ms ease,
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+  .btn-motion:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+  .btn-motion:active:not(:disabled) {
+    transform: translateY(0) scale(0.99);
+  }
+  .btn-motion:disabled {
+    cursor: not-allowed;
+    filter: saturate(0.55);
   }
 }
 
@@ -93,14 +137,17 @@
   animation: pacecar-float 5s ease-in-out 0.7s infinite;
 }
 .landing-orb {
-  animation: pacecar-drift 9s ease-in-out infinite;
+  animation: pacecar-drift 18s ease-in-out infinite;
+}
+.page-motion-inactive .landing-orb {
+  animation-play-state: paused;
 }
 .reveal-on-scroll {
   opacity: 0;
   transform: translateY(24px);
   transition:
-    opacity 0.65s ease,
-    transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+    opacity 0.45s ease,
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .reveal-on-scroll.is-visible {
   opacity: 1;
@@ -113,8 +160,8 @@
     border-color 0.25s ease;
 }
 .interactive-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px rgba(17, 26, 58, 0.12);
 }
 .footer-link {
   position: relative;
@@ -136,6 +183,80 @@
   transform: scaleX(1);
   transform-origin: left;
 }
+.drift-scene {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+}
+.drift-scene.is-inactive *,
+.drift-scene.is-inactive *::before,
+.drift-scene.is-inactive *::after {
+  animation-play-state: paused !important;
+}
+.drift-scene__road {
+  position: absolute;
+  inset: auto -8% 9% -12%;
+  height: 44%;
+  border: 1px solid rgba(191, 211, 255, 0.18);
+  border-radius: 50%;
+  transform: rotate(-13deg);
+  box-shadow:
+    0 0 0 18px rgba(191, 211, 255, 0.025),
+    0 0 0 38px rgba(191, 211, 255, 0.02);
+}
+.drift-scene__car {
+  transform-origin: 55% 70%;
+  animation: pacecar-drift-entry 1.25s cubic-bezier(0.16, 0.78, 0.24, 1) both;
+}
+.drift-scene__smoke {
+  transform-origin: center;
+  opacity: 0;
+  animation: pacecar-smoke 1.1s ease-out 0.3s both;
+}
+.drift-scene__streak {
+  transform-origin: right center;
+  animation: pacecar-streak 0.9s ease-out 0.12s both;
+}
+@keyframes pacecar-drift-entry {
+  0% {
+    opacity: 0;
+    transform: translate3d(28%, 8%, 0) rotate(8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translate3d(-2%, -1%, 0) rotate(-3deg);
+  }
+  82% {
+    transform: translate3d(1%, 0, 0) rotate(1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+}
+@keyframes pacecar-smoke {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateX(12px);
+  }
+  45% {
+    opacity: 0.34;
+  }
+  100% {
+    opacity: 0.14;
+    transform: scale(1.13) translateX(-12px);
+  }
+}
+@keyframes pacecar-streak {
+  from {
+    opacity: 0;
+    transform: scaleX(0.4);
+  }
+  to {
+    opacity: 0.7;
+    transform: scaleX(1);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -143,8 +264,23 @@
   .motion-enter,
   .hero-float,
   .hero-float-alt,
-  .landing-orb {
+  .landing-orb,
+  .drift-scene__car,
+  .drift-scene__smoke,
+  .drift-scene__streak {
     animation: none !important;
+  }
+  .drift-scene__car {
+    opacity: 1;
+    transform: none;
+  }
+  .drift-scene__smoke {
+    opacity: 0.14;
+    transform: none;
+  }
+  .drift-scene__streak {
+    opacity: 0.5;
+    transform: none;
   }
   .reveal-on-scroll {
     opacity: 1;
@@ -157,5 +293,11 @@
   }
   .interactive-card:hover {
     transform: none;
+  }
+  .btn-motion,
+  .btn-motion:hover,
+  .btn-motion:active {
+    transform: none;
+    transition: none;
   }
 }

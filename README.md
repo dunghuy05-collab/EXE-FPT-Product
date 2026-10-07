@@ -59,6 +59,9 @@ Các tài khoản trên là dữ liệu seed dành cho demo. Khi đăng nhập, 
 - Hình thức có tài xế có line item phí riêng trong báo giá
 - Đặt xe nhanh chỉ tự động chấp nhận khi xe bật tính năng và người thuê đã xác thực, có mức rủi ro thấp
 - Đăng nhập theo ba vai trò
+- Tự đăng ký tài khoản người thuê hoặc chủ xe; tài khoản được đăng nhập sau khi tạo thành công, admin không thể tự đăng ký
+- Biểu mẫu đăng ký kiểm tra email, số điện thoại, mật khẩu, xác nhận mật khẩu và chấp thuận điều khoản; có trạng thái lỗi/loading và nút hiện mật khẩu
+- Nội dung demo về điều khoản và quyền riêng tư tại `/terms` và `/privacy`; cần được đơn vị vận hành rà soát trước khi mở dịch vụ production
 - Dashboard người thuê, chủ xe và admin
 - Dashboard sidebar theo vai trò, skeleton/error/empty states
 - Booking stepper 3 bước với validation lịch thuê và giấy tờ demo
@@ -224,7 +227,11 @@ Lệnh `npm start` chỉ khởi động Express API, không tự phục vụ `cl
 npm test
 ```
 
-Smoke test khởi động API trên database tạm, kiểm tra authorization, quote, consent, booking/idempotency, hợp đồng hai chữ ký và chống lách kiểm duyệt. Database sử dụng hằng ngày không bị chỉnh sửa.
+Smoke test khởi động API trên database tạm, kiểm tra đăng ký renter/owner, validation, email trùng, session và logout cùng authorization, quote, booking/idempotency, hợp đồng hai chữ ký và chống lách kiểm duyệt. Database sử dụng hằng ngày không bị chỉnh sửa.
+
+## Hệ thống thiết kế
+
+Màu sắc, typography, spacing, trạng thái tương tác, minh họa hero và nguyên tắc accessibility/responsive được ghi tại [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
 
 ## Giới hạn của bản demo
 

@@ -53,10 +53,10 @@ async function waitForServer() {
   throw new Error(`Test server did not start.\n${serverLog}`);
 }
 
-async function login(email) {
+async function login(email, password = "123456") {
   const response = await request("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password: "123456" }),
+    body: JSON.stringify({ email, password }),
   });
   assert.equal(response.status, 200, JSON.stringify(response.body));
   return response.body.token;
@@ -68,6 +68,132 @@ try {
   const owner = await login("owner@pacecar.vn");
   const unrelatedOwner = await login("tung@pacecar.vn");
   const admin = await login("admin@pacecar.vn");
+
+  const registrationInput = {
+    name: "QA Renter",
+    email: "qa-renter@example.test",
+    phone: "+84 912 345 678",
+    password: "PacecarTest!2026",
+    role: "renter",
+    acceptTerms: true,
+  };
+  const registrationWithoutConsent = await request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ ...registrationInput, acceptTerms: false }),
+  });
+  assert.equal(registrationWithoutConsent.status, 400);
+  assert.ok(registrationWithoutConsent.body.fields.acceptTerms);
+
+  const adminRegistration = await request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ ...registrationInput, role: "admin" }),
+  });
+  assert.equal(adminRegistration.status, 400);
+  assert.ok(adminRegistration.body.fields.role);
+
+  const invalidRegistration = await request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({
+      ...registrationInput,
+      email: "not-an-email",
+      phone: "12",
+      password: "short",
+    }),
+  });
+  assert.equal(invalidRegistration.status, 400);
+  assert.ok(invalidRegistration.body.fields.email);
+  assert.ok(invalidRegistration.body.fields.phone);
+  assert.ok(invalidRegistration.body.fields.password);
+
+  const registeredRenter = await request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(registrationInput),
+  });
+  assert.equal(registeredRenter.status, 201, JSON.stringify(registeredRenter.body));
+  assert.equal(registeredRenter.body.role, "renter");
+  assert.equal(registeredRenter.body.email, registrationInput.email);
+  assert.equal(typeof registeredRenter.body.token, "string");
+  assert.equal("password" in registeredRenter.body, false);
+  assert.equal("passwordHash" in registeredRenter.body, false);
+  assert.equal("consents" in registeredRenter.body, false);
+  const persistedRegistration = JSON.parse(fs.readFileSync(dbFile, "utf8"));
+  const storedRegisteredUser = persistedRegistration.users.find(
+    (user) => user.id === registeredRenter.body.id,
+  );
+  assert.notEqual(storedRegisteredUser.passwordHash, registrationInput.password);
+  assert.equal(
+    storedRegisteredUser.consents.termsVersion,
+    "pacecar-demo-2026-10-07",
+  );
+  assert.ok(storedRegisteredUser.consents.acceptedAt);
+  assert.ok(
+    persistedRegistration.sessions.some(
+      (session) =>
+        session.userId === storedRegisteredUser.id &&
+        session.tokenHash !== registeredRenter.body.token,
+    ),
+  );
+  const registeredProfile = await request(
+    `/users/${registeredRenter.body.id}`,
+    { token: registeredRenter.body.token },
+  );
+  assert.equal(registeredProfile.status, 200);
+  const registeredLoginToken = await login(
+    registrationInput.email,
+    registrationInput.password,
+  );
+  assert.equal(
+    (await request(`/users/${registeredRenter.body.id}`, {
+      token: registeredLoginToken,
+    })).status,
+    200,
+  );
+
+  const duplicateRegistration = await request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(registrationInput),
+  });
+  assert.equal(duplicateRegistration.status, 409);
+  assert.ok(duplicateRegistration.body.fields.email);
+
+  const registeredOwner = await request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({
+      ...registrationInput,
+      name: "QA Owner",
+      email: "qa-owner@example.test",
+      role: "owner",
+    }),
+  });
+  assert.equal(registeredOwner.status, 201);
+  assert.equal(registeredOwner.body.role, "owner");
+  assert.equal("token" in registeredOwner.body, true);
+
+  const loggedOutRegistration = await request("/auth/logout", {
+    method: "POST",
+    token: registeredRenter.body.token,
+  });
+  assert.equal(loggedOutRegistration.status, 200);
+  const revokedRegistrationSession = await request(
+    `/users/${registeredRenter.body.id}`,
+    { token: registeredRenter.body.token },
+  );
+  assert.equal(revokedRegistrationSession.status, 401);
+
+  const publicCars = await request("/cars");
+  const carWithoutReviews = publicCars.body.find((car) => car.id === 1);
+  assert.equal(carWithoutReviews.reviewCount, 0);
+  assert.equal(carWithoutReviews.rating, null);
+  const carWithReviews = publicCars.body.find((car) => car.id === 2);
+  assert.equal(carWithReviews.reviewCount, 1);
+  assert.equal(carWithReviews.rating, 5);
+  const searchResults = await request("/search/cars");
+  const unratedSearchCar = searchResults.body.items.find((car) => car.id === 1);
+  assert.equal(unratedSearchCar.reviewCount, 0);
+  assert.equal(unratedSearchCar.rating, null);
+  const unratedDetail = await request("/cars/1");
+  assert.equal(unratedDetail.body.reviewCount, 0);
+  assert.equal(unratedDetail.body.rating, null);
 
   const forbiddenPromotions = await request("/admin/promotions", {
     token: owner,
@@ -435,7 +561,7 @@ try {
   assert.equal(resume.status, 409);
 
   console.log(
-    "PaceCar API smoke test passed (same-day journey, payment, booking, contract, authorization, moderation).",
+    "PaceCar API smoke test passed (registration, sessions, same-day journey, booking, contract, authorization, moderation).",
   );
 } finally {
   if (server.exitCode === null) {

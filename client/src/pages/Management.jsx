@@ -13,7 +13,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
-import { api, dateTime, money } from "../services/api";
+import { api, date, dateTime, money } from "../services/api";
 import {
   Button,
   CarCard,
@@ -252,14 +252,22 @@ export function MyBookings() {
               <div className="flex flex-wrap gap-2">
                 {actions(b)}
                 {contractStatuses.has(b.status) && (
-                  <Link to={`/contract/${b.id}`}>
-                    <Button variant="outline">Hợp đồng</Button>
-                  </Link>
+                  <Button
+                    as={Link}
+                    to={`/contract/${b.id}`}
+                    variant="outline"
+                  >
+                    Hợp đồng
+                  </Button>
                 )}
                 {evidenceStatuses.has(b.status) && (
-                  <Link to={`/evidence/${b.id}`}>
-                    <Button variant="outline">Giao nhận</Button>
-                  </Link>
+                  <Button
+                    as={Link}
+                    to={`/evidence/${b.id}`}
+                    variant="outline"
+                  >
+                    Giao nhận
+                  </Button>
                 )}
                 {user.role === "renter" &&
                   b.status === "Completed" &&

@@ -16,7 +16,7 @@ export default class ErrorBoundary extends React.Component {
           <p className="text-4xl">⚠️</p>
           <h1 className="mt-4 text-2xl font-bold">Ứng dụng gặp sự cố</h1>
           <p className="mt-2 text-sm text-slate-500">
-            {this.state.error.message}
+            Đã xảy ra lỗi khi hiển thị trang này. Vui lòng thử tải lại.
           </p>
           <button
             className="mt-6 rounded-xl bg-brand-600 px-5 py-3 font-bold text-white"

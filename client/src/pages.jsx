@@ -16,6 +16,8 @@ import {
   Check,
   CheckCircle2,
   Clock3,
+  Eye,
+  EyeOff,
   FileSignature,
   Fuel,
   Gauge,
@@ -32,9 +34,11 @@ import {
   Truck,
   Zap,
   Users,
+  UserPlus,
   Wallet,
 } from "lucide-react";
 import { api, date, dateTime, money } from "./services/api";
+import DriftScene from "./components/DriftScene";
 import {
   Button,
   CarCard,
@@ -134,12 +138,25 @@ function Reveal({ children, className = "", delay = 0 }) {
   );
 }
 export function Landing() {
+  const [pageVisible, setPageVisible] = useState(
+    () => document.visibilityState === "visible",
+  );
+  useEffect(() => {
+    const updateVisibility = () =>
+      setPageVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", updateVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", updateVisibility);
+  }, []);
   const { data: cars } = useFetch("/cars");
   const { data: promotions } = useFetch("/promotions");
-  const averageRating = cars?.length
+  const ratedCars =
+    cars?.filter((car) => car.reviewCount > 0 && Number.isFinite(Number(car.rating))) ||
+    [];
+  const averageRating = ratedCars.length
     ? (
-        cars.reduce((sum, car) => sum + Number(car.rating || 0), 0) /
-        cars.length
+        ratedCars.reduce((sum, car) => sum + Number(car.rating), 0) /
+        ratedCars.length
       ).toFixed(1)
     : "—";
   const benefits = [
@@ -167,58 +184,59 @@ export function Landing() {
   ];
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-950 via-brand-700 to-blue-500 py-10 text-white sm:py-16 lg:py-28">
-        <div className="landing-orb absolute -right-32 -top-36 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl" />
-        <div className="container-app relative grid items-center gap-12 xl:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)]">
+      <section
+        className={`relative isolate overflow-hidden bg-gradient-to-br from-[#101832] via-brand-950 to-[#183b8d] py-9 text-white sm:py-14 lg:py-20 ${pageVisible ? "" : "page-motion-inactive"}`}
+      >
+        <div className="surface-grid pointer-events-none absolute inset-0" />
+        <div className="landing-orb pointer-events-none absolute -right-40 -top-48 h-[32rem] w-[32rem] rounded-full bg-brand-400/20 blur-3xl" />
+        <div className="container-app relative grid items-center gap-4 sm:gap-7 xl:grid-cols-[minmax(0,1.02fr)_minmax(380px,0.98fr)]">
           <div className="min-w-0">
-            <span className="motion-enter inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm">
-              <Sparkles size={15} /> Nền tảng thuê xe dựa trên niềm tin
+            <span className="motion-enter inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-3.5 py-2 text-xs font-semibold tracking-wide text-blue-100 sm:text-sm">
+              <Sparkles size={15} className="text-signal-400" /> NỀN TẢNG THUÊ XE AN TOÀN
             </span>
-            <h1 className="motion-enter motion-delay-1 mt-6 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+            <h1 className="motion-enter motion-delay-1 mt-5 max-w-2xl text-4xl font-extrabold leading-[1.12] tracking-tight sm:mt-6 sm:text-5xl lg:text-6xl">
               Thuê xe minh bạch,
               <br />
-              <span className="text-blue-200">an toàn hơn.</span>
+              <span className="relative inline-block text-blue-200">
+                an toàn hơn.
+                <span className="absolute -bottom-1 left-0 h-1 w-2/3 rounded-full bg-signal-400/90 sm:-bottom-2 sm:h-1.5" />
+              </span>
             </h1>
-            <p className="motion-enter motion-delay-2 mt-6 max-w-xl text-lg leading-8 text-blue-100">
-              PaceCar giúp người thuê và chủ xe giao dịch an toàn hơn thông qua
-              xác thực, hợp đồng số, Trust Score và kiểm soát rủi ro.
+            <p className="motion-enter motion-delay-2 mt-5 max-w-xl text-base leading-7 text-blue-100 sm:mt-6 sm:text-lg sm:leading-8">
+              Chọn xe ưng ý với chi phí rõ ràng, hồ sơ xác thực và hợp đồng số —
+              để mỗi hành trình bắt đầu bằng sự an tâm.
             </p>
-            <div className="motion-enter motion-delay-3 mt-8 flex flex-wrap gap-3">
-              <Link to="/cars">
-                <Button variant="light">
-                  Tìm xe ngay <ArrowRight size={18} />
-                </Button>
+            <div className="motion-enter motion-delay-3 mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
+              <Link
+                to="/cars"
+                className="btn-motion inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-brand-700 shadow-lg shadow-black/10 hover:bg-blue-50 hover:shadow-xl"
+              >
+                Tìm xe ngay <ArrowRight size={18} />
               </Link>
-              <Link to="/login?role=owner&next=/owner/cars/new">
-                <Button variant="on-dark">Đăng xe cho thuê</Button>
+              <Link
+                to="/register?role=owner"
+                className="btn-motion inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/5 px-5 py-3 font-semibold text-white hover:border-white/40 hover:bg-white/10"
+              >
+                Bạn có xe? Đăng cho thuê
               </Link>
             </div>
-            <div className="motion-enter motion-delay-4 mt-9 hidden gap-8 text-sm sm:flex">
+            <div className="motion-enter motion-delay-4 mt-7 grid max-w-lg grid-cols-3 gap-3 border-t border-white/10 pt-5 text-xs text-blue-100 sm:mt-9 sm:gap-6 sm:pt-6 sm:text-sm">
               <span>
-                <b className="block text-2xl">{cars?.length ?? "—"}</b>Xe đang
-                mở
+                <b className="block text-xl font-extrabold text-white sm:text-2xl">{cars?.length ?? "—"}</b>
+                xe sẵn sàng
               </span>
               <span>
-                <b className="block text-2xl">{averageRating}/5</b>Đánh giá TB
+                <b className="block text-xl font-extrabold text-white sm:text-2xl">{averageRating}/5</b>
+                đánh giá trung bình
               </span>
               <span>
-                <b className="block text-2xl">{promotions?.length ?? "—"}</b>Ưu
-                đãi hiện có
+                <b className="block text-xl font-extrabold text-white sm:text-2xl">{promotions?.length ?? "—"}</b>
+                ưu đãi hiện có
               </span>
             </div>
           </div>
-          <div className="relative hidden min-w-0 xl:block">
-            <img
-              className="hero-float h-[430px] w-full rounded-[2rem] object-cover shadow-2xl ring-1 ring-white/20"
-              src="https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=1200&q=85"
-              alt="Xe du lịch PaceCar trên hành trình"
-            />
-            <div className="hero-float-alt absolute -bottom-5 -left-5 card p-4 text-slate-900">
-              <p className="text-xs text-slate-500">Trust Score chủ xe</p>
-              <p className="mt-1 text-xl font-extrabold text-emerald-600">
-                94/100 · Low Risk
-              </p>
-            </div>
+          <div className="relative mx-auto w-full max-w-[580px] min-w-0 px-1 pb-1 sm:px-5 xl:px-0">
+            <DriftScene />
           </div>
         </div>
       </section>
@@ -400,14 +418,12 @@ export function HelpCenter() {
             xử lý tranh chấp.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link to={bookingTarget}>
-              <Button variant="light">
-                Mở đơn thuê của tôi <ArrowRight size={18} />
-              </Button>
-            </Link>
-            <a href="tel:19001000">
-              <Button variant="on-dark">Gọi 1900 1000</Button>
-            </a>
+            <Button as={Link} to={bookingTarget} variant="light">
+              Mở đơn thuê của tôi <ArrowRight size={18} />
+            </Button>
+            <Button as="a" href="tel:19001000" variant="on-dark">
+              Gọi 1900 1000
+            </Button>
           </div>
         </div>
       </section>
@@ -587,7 +603,35 @@ export function Cars() {
       toast(e.message);
     }
   }
-  if (error) return <ErrorState message={error} onRetry={reload} />;
+  if (error)
+    return (
+      <div className="container-app space-y-5 py-8">
+        <SearchBar compact />
+        <div className="card p-8 text-center" role="alert">
+          <h1 className="text-xl font-bold">
+            Không thể tìm xe với tiêu chí này
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">{error}</p>
+          <Button
+            className="mt-5"
+            onClick={() => {
+              const next = new URLSearchParams(params);
+              for (const key of [
+                "startDate",
+                "startTime",
+                "endDate",
+                "endTime",
+                "page",
+              ])
+                next.delete(key);
+              setParams(next);
+            }}
+          >
+            Chọn lại thời gian
+          </Button>
+        </div>
+      </div>
+    );
   const items = data?.items || [];
   return (
     <div>
@@ -745,7 +789,7 @@ export function Cars() {
               </Button>
             </div>
           </aside>
-          <main>
+          <div className="min-w-0">
             {!data ? (
               <PageLoading />
             ) : items.length ? (
@@ -792,13 +836,19 @@ export function Cars() {
                     <div className="p-5">
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="font-bold">{car.name}</h3>
-                        <span className="flex items-center gap-1 text-sm font-bold">
-                          <Star
-                            size={14}
-                            className="fill-amber-400 text-amber-400"
-                          />
-                          {car.rating}
-                        </span>
+                        {car.reviewCount > 0 ? (
+                          <span className="flex items-center gap-1 text-sm font-bold">
+                            <Star
+                              size={14}
+                              className="fill-amber-400 text-amber-400"
+                            />
+                            {car.rating} ({car.reviewCount})
+                          </span>
+                        ) : (
+                          <span className="text-xs font-semibold text-slate-400">
+                            Chưa có đánh giá
+                          </span>
+                        )}
                       </div>
                       <p className="mt-2 text-sm text-slate-500">
                         {car.location} · {car.seats} chỗ · {car.transmission}
@@ -872,7 +922,7 @@ export function Cars() {
                 </Button>
               </nav>
             )}
-          </main>
+          </div>
         </div>
       </div>
     </div>
@@ -1021,14 +1071,17 @@ function LegacyCarDetail() {
                 deposit={c.deposit}
               />
             </div>
-            <Link to={`/booking/${c.id}`}>
-              <Button className="w-full">Gửi yêu cầu thuê</Button>
-            </Link>
-            <Link to="/contract/1">
-              <Button variant="outline" className="mt-3 w-full">
-                Xem hợp đồng mẫu
-              </Button>
-            </Link>
+            <Button as={Link} to={`/booking/${c.id}`} className="w-full">
+              Gửi yêu cầu thuê
+            </Button>
+            <Button
+              as={Link}
+              to="/contract/1"
+              variant="outline"
+              className="mt-3 w-full"
+            >
+              Xem hợp đồng mẫu
+            </Button>
             <p className="mt-4 text-center text-xs text-slate-400">
               Bạn chưa phải thanh toán ở bước này
             </p>
@@ -1198,7 +1251,7 @@ export function CarDetail() {
         )}
       </div>
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
-        <main className="space-y-7">
+        <div className="min-w-0 space-y-7">
           <section>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-extrabold">{car.name}</h1>
@@ -1279,11 +1332,11 @@ export function CarDetail() {
           <section>
             <div className="flex items-end justify-between">
               <h2 className="text-xl font-bold">Đánh giá chuyến đi</h2>
-              <span className="text-sm font-bold text-amber-500">
-                {reviews?.length
-                  ? `★ ${car.rating} · ${reviews.length} đánh giá`
-                  : "Chưa có đánh giá trên PaceCar"}
-              </span>
+              {!!reviews?.length && (
+                <span className="text-sm font-bold text-amber-500">
+                  ★ {car.rating} · {reviews.length} đánh giá
+                </span>
+              )}
             </div>
             <div className="mt-4 space-y-3">
               {reviews?.length ? (
@@ -1305,7 +1358,7 @@ export function CarDetail() {
               )}
             </div>
           </section>
-        </main>
+        </div>
         <aside>
           <div id="booking-panel" className="card sticky top-24 p-6">
             <div className="flex items-end justify-between">
@@ -1450,11 +1503,13 @@ export function CarDetail() {
               </div>
             )}
             {quote ? (
-              <Link to={`/booking/${car.id}?quoteId=${quote.quoteId}`}>
-                <Button className="mt-5 w-full">
-                  Tiếp tục đặt xe <ArrowRight size={17} />
-                </Button>
-              </Link>
+              <Button
+                as={Link}
+                to={`/booking/${car.id}?quoteId=${quote.quoteId}`}
+                className="mt-5 w-full"
+              >
+                Tiếp tục đặt xe <ArrowRight size={17} />
+              </Button>
             ) : (
               <Button disabled className="mt-5 w-full">
                 Chọn lịch để xem giá
@@ -1481,9 +1536,12 @@ export function CarDetail() {
             </b>
           </div>
           {quote ? (
-            <Link to={`/booking/${car.id}?quoteId=${quote.quoteId}`}>
-              <Button>Tiếp tục đặt xe</Button>
-            </Link>
+            <Button
+              as={Link}
+              to={`/booking/${car.id}?quoteId=${quote.quoteId}`}
+            >
+              Tiếp tục đặt xe
+            </Button>
           ) : (
             <Button
               onClick={() =>
@@ -1525,9 +1583,13 @@ export function Login() {
     ),
     [password, setPassword] = useState(demoMode ? "123456" : ""),
     [role, setRole] = useState(initialRole),
-    [err, setErr] = useState("");
+    [err, setErr] = useState(""),
+    [submitting, setSubmitting] = useState(false);
   async function submit(e) {
     e.preventDefault();
+    if (submitting) return;
+    setErr("");
+    setSubmitting(true);
     try {
       const u = await api("/auth/login", {
         method: "POST",
@@ -1539,8 +1601,10 @@ export function Login() {
         safeNext =
           next?.startsWith("/") && !next.startsWith("//") ? next : null;
       nav(safeNext || "/dashboard/" + u.role);
-    } catch (e) {
-      setErr(e.message);
+    } catch (error) {
+      setErr(error.message);
+    } finally {
+      setSubmitting(false);
     }
   }
   const pick = (r) => {
@@ -1562,11 +1626,15 @@ export function Login() {
           </p>
         </div>
         <div
+          role="group"
+          aria-label="Vai trò tài khoản"
           className={`mt-6 grid rounded-xl bg-slate-100 p-1 ${roles.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
         >
           {roles.map((r) => (
             <button
+              type="button"
               onClick={() => pick(r)}
+              aria-pressed={role === r}
               className={`rounded-lg py-2 text-sm font-semibold ${role === r ? "bg-white shadow" : ""}`}
               key={r}
             >
@@ -1585,10 +1653,16 @@ export function Login() {
             </label>
             <input
               id="login-email"
-              className="input"
+              className={`input ${err ? "border-red-500 focus:border-red-600 focus:ring-red-100" : ""}`}
+              type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErr("");
+              }}
               autoComplete="email"
+              aria-invalid={Boolean(err)}
+              aria-describedby={err ? "login-error" : undefined}
               required
             />
           </div>
@@ -1598,19 +1672,41 @@ export function Login() {
             </label>
             <input
               id="login-password"
-              className="input"
+              className={`input ${err ? "border-red-500 focus:border-red-600 focus:ring-red-100" : ""}`}
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErr("");
+              }}
               autoComplete="current-password"
+              aria-invalid={Boolean(err)}
+              aria-describedby={err ? "login-error" : undefined}
               required
             />
           </div>
-          {err && <p className="text-sm text-red-600">{err}</p>}
-          <Button type="submit" className="w-full">
-            Đăng nhập
+          {err && (
+            <p
+              id="login-error"
+              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+              role="alert"
+            >
+              {err}
+            </p>
+          )}
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? "Đang đăng nhập..." : "Đăng nhập"}
           </Button>
         </form>
+        <p className="mt-5 text-center text-sm text-slate-600">
+          Chưa có tài khoản?{" "}
+          <Link
+            to="/register"
+            className="font-bold text-brand-700 underline-offset-4 hover:underline"
+          >
+            Đăng ký miễn phí
+          </Link>
+        </p>
         {demoMode && (
           <div className="mt-5 rounded-xl bg-blue-50 p-4 text-xs text-blue-800">
             Tài khoản demo development: {role}@pacecar.vn / 123456
@@ -1620,6 +1716,477 @@ export function Login() {
     </div>
   );
 }
+
+export function Register() {
+  const nav = useNavigate();
+  const toast = useToast();
+  const { login } = useAuth();
+  const [search] = useSearchParams();
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    role: search.get("role") === "owner" ? "owner" : "renter",
+    acceptTerms: false,
+  });
+  const [errors, setErrors] = useState({});
+  const [formError, setFormError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const update = (field, value) => {
+    setValues((current) => ({ ...current, [field]: value }));
+    setErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+    setFormError("");
+  };
+  const validate = () => {
+    const nextErrors = {};
+    const name = values.name.trim();
+    const email = values.email.trim();
+    const digits = values.phone.replace(/\D/gu, "");
+    if (!name) nextErrors.name = "Nhập họ và tên của bạn.";
+    else if (name.length > 120)
+      nextErrors.name = "Họ tên không được vượt quá 120 ký tự.";
+    if (!email) nextErrors.email = "Nhập địa chỉ email.";
+    else if (
+      email.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)
+    )
+      nextErrors.email = "Email chưa đúng định dạng.";
+    if (!values.phone.trim()) nextErrors.phone = "Nhập số điện thoại.";
+    else if (
+      values.phone.length > 30 ||
+      !/^\+?[\d\s().-]+$/u.test(values.phone) ||
+      digits.length < 9 ||
+      digits.length > 15
+    )
+      nextErrors.phone = "Số điện thoại cần có từ 9 đến 15 chữ số.";
+    if (values.password.length < 8 || values.password.length > 128)
+      nextErrors.password = "Mật khẩu cần có từ 8 đến 128 ký tự.";
+    if (values.confirmPassword !== values.password)
+      nextErrors.confirmPassword = "Mật khẩu xác nhận chưa khớp.";
+    if (!["renter", "owner"].includes(values.role))
+      nextErrors.role = "Chọn vai trò tài khoản.";
+    if (!values.acceptTerms)
+      nextErrors.acceptTerms = "Bạn cần đồng ý với các điều khoản để tiếp tục.";
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+  async function submit(event) {
+    event.preventDefault();
+    setFormError("");
+    if (submitting || !validate()) return;
+    setSubmitting(true);
+    try {
+      const user = await api("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          name: values.name.trim(),
+          email: values.email.trim(),
+          phone: values.phone.trim(),
+          password: values.password,
+          role: values.role,
+          acceptTerms: values.acceptTerms,
+        }),
+      });
+      login(user);
+      toast("Tài khoản đã sẵn sàng");
+      const next = search.get("next");
+      const safeNext =
+        next?.startsWith("/") && !next.startsWith("//") ? next : null;
+      nav(safeNext || `/dashboard/${user.role}`, { replace: true });
+    } catch (error) {
+      const fieldErrors =
+        error.details &&
+        typeof error.details === "object" &&
+        !Array.isArray(error.details)
+          ? error.details
+          : {};
+      setErrors((current) => ({ ...current, ...fieldErrors }));
+      setFormError(
+        Object.keys(fieldErrors).length
+          ? ""
+          : error.message || "Chưa thể tạo tài khoản. Vui lòng thử lại.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+  const errorText = (field) =>
+    errors[field] ? (
+      <p id={`register-${field}-error`} className="mt-1.5 text-sm text-red-700">
+        {errors[field]}
+      </p>
+    ) : null;
+  const fieldClass = (field) =>
+    `input ${errors[field] ? "border-red-500 focus:border-red-600 focus:ring-red-100" : ""}`;
+  return (
+    <div className="container-app grid min-h-[calc(100svh-4rem)] place-items-center py-8 sm:py-12">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-lift lg:grid-cols-[0.82fr_1.18fr]">
+        <aside className="relative hidden overflow-hidden bg-gradient-to-br from-brand-950 via-brand-900 to-brand-700 p-9 text-white lg:flex lg:flex-col lg:justify-between">
+          <div className="surface-grid pointer-events-none absolute inset-0" />
+          <div className="relative">
+            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10 text-signal-400">
+              <ShieldCheck size={26} />
+            </div>
+            <p className="mt-8 text-sm font-bold uppercase tracking-[0.18em] text-blue-200">
+              PaceCar
+            </p>
+            <h2 className="mt-3 text-3xl font-extrabold leading-tight">
+              Hành trình tốt bắt đầu từ sự an tâm.
+            </h2>
+            <p className="mt-4 leading-7 text-blue-100">
+              Tham gia cộng đồng thuê xe minh bạch với hồ sơ rõ ràng, chi phí
+              được công khai và hợp đồng số.
+            </p>
+          </div>
+          <ul className="relative space-y-4 text-sm text-blue-50">
+            {[
+              "Mật khẩu tài khoản được bảo vệ bằng mã băm",
+              "Chủ xe và người thuê đều được xác thực",
+              "Theo dõi booking trong một nơi",
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <CheckCircle2
+                  size={18}
+                  className="mt-0.5 shrink-0 text-emerald-300"
+                />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </aside>
+        <div className="min-w-0 p-5 sm:p-8 lg:p-10">
+          <div className="mb-7">
+            <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-700 lg:hidden">
+              <UserPlus size={24} />
+            </div>
+            <p className="text-sm font-bold text-brand-700">
+              BẮT ĐẦU CÙNG PACECAR
+            </p>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">
+              Tạo tài khoản
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Chọn vai trò phù hợp, bạn có thể cập nhật hồ sơ sau.
+            </p>
+          </div>
+          <form onSubmit={submit} noValidate aria-busy={submitting}>
+            <fieldset disabled={submitting} className="space-y-5">
+              <legend className="label mb-2">Bạn muốn tham gia với vai trò</legend>
+              <div
+                role="group"
+                aria-label="Chọn vai trò tài khoản"
+                className="grid grid-cols-2 gap-3"
+              >
+                {[
+                  ["renter", "Người thuê xe", "Tìm và đặt xe cho chuyến đi"],
+                  ["owner", "Chủ xe", "Đăng xe và quản lý lượt thuê"],
+                ].map(([role, title, description]) => (
+                  <button
+                    aria-pressed={values.role === role}
+                    className={`btn-motion min-h-[88px] rounded-2xl border p-3 text-left sm:p-4 ${
+                      values.role === role
+                        ? "border-brand-500 bg-brand-50 ring-2 ring-brand-100"
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                    }`}
+                    key={role}
+                    onClick={() => update("role", role)}
+                    type="button"
+                  >
+                    <span className="block font-bold text-slate-900">
+                      {title}
+                    </span>
+                    <span className="mt-1 block text-xs leading-5 text-slate-600">
+                      {description}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {errorText("role")}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <label className="label" htmlFor="register-name">
+                    Họ và tên <span aria-hidden="true" className="text-red-600">*</span>
+                  </label>
+                  <input
+                    autoComplete="name"
+                    className={fieldClass("name")}
+                    id="register-name"
+                    maxLength={120}
+                    aria-invalid={Boolean(errors.name)}
+                    aria-describedby={errors.name ? "register-name-error" : undefined}
+                    onChange={(event) => update("name", event.target.value)}
+                    value={values.name}
+                  />
+                  {errorText("name")}
+                </div>
+                <div>
+                  <label className="label" htmlFor="register-email">
+                    Email <span aria-hidden="true" className="text-red-600">*</span>
+                  </label>
+                  <input
+                    autoComplete="email"
+                    className={fieldClass("email")}
+                    id="register-email"
+                    inputMode="email"
+                    aria-invalid={Boolean(errors.email)}
+                    aria-describedby={errors.email ? "register-email-error" : undefined}
+                    onChange={(event) => update("email", event.target.value)}
+                    type="email"
+                    value={values.email}
+                  />
+                  {errorText("email")}
+                </div>
+                <div>
+                  <label className="label" htmlFor="register-phone">
+                    Số điện thoại <span aria-hidden="true" className="text-red-600">*</span>
+                  </label>
+                  <input
+                    autoComplete="tel"
+                    className={fieldClass("phone")}
+                    id="register-phone"
+                    inputMode="tel"
+                    aria-invalid={Boolean(errors.phone)}
+                    aria-describedby={errors.phone ? "register-phone-error" : undefined}
+                    onChange={(event) => update("phone", event.target.value)}
+                    type="tel"
+                    value={values.phone}
+                  />
+                  {errorText("phone")}
+                </div>
+                <div>
+                  <label className="label" htmlFor="register-password">
+                    Mật khẩu <span aria-hidden="true" className="text-red-600">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      autoComplete="new-password"
+                      className={`${fieldClass("password")} pr-12`}
+                      id="register-password"
+                      maxLength={128}
+                      aria-invalid={Boolean(errors.password)}
+                      aria-describedby="register-password-hint register-password-error"
+                      onChange={(event) => update("password", event.target.value)}
+                      type={showPassword ? "text" : "password"}
+                      value={values.password}
+                    />
+                    <button
+                      aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                      aria-pressed={showPassword}
+                      className="btn-motion absolute inset-y-0 right-1 grid w-10 place-items-center rounded-lg text-slate-500 hover:bg-slate-100"
+                      onClick={() => setShowPassword((shown) => !shown)}
+                      type="button"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  <p id="register-password-hint" className="mt-1.5 text-xs text-slate-500">
+                    Từ 8 đến 128 ký tự.
+                  </p>
+                  {errorText("password")}
+                </div>
+                <div>
+                  <label className="label" htmlFor="register-confirm-password">
+                    Xác nhận mật khẩu{" "}
+                    <span aria-hidden="true" className="text-red-600">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      autoComplete="new-password"
+                      className={`${fieldClass("confirmPassword")} pr-12`}
+                      id="register-confirm-password"
+                      maxLength={128}
+                      aria-invalid={Boolean(errors.confirmPassword)}
+                      aria-describedby={
+                        errors.confirmPassword
+                          ? "register-confirmPassword-error"
+                          : undefined
+                      }
+                      onChange={(event) =>
+                        update("confirmPassword", event.target.value)
+                      }
+                      type={showConfirmation ? "text" : "password"}
+                      value={values.confirmPassword}
+                    />
+                    <button
+                      aria-label={
+                        showConfirmation
+                          ? "Ẩn mật khẩu xác nhận"
+                          : "Hiện mật khẩu xác nhận"
+                      }
+                      aria-pressed={showConfirmation}
+                      className="btn-motion absolute inset-y-0 right-1 grid w-10 place-items-center rounded-lg text-slate-500 hover:bg-slate-100"
+                      onClick={() => setShowConfirmation((shown) => !shown)}
+                      type="button"
+                    >
+                      {showConfirmation ? (
+                        <EyeOff size={18} />
+                      ) : (
+                        <Eye size={18} />
+                      )}
+                    </button>
+                  </div>
+                  {errorText("confirmPassword")}
+                </div>
+              </div>
+              <div>
+                <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-slate-600">
+                  <input
+                    checked={values.acceptTerms}
+                    className="mt-1 h-5 w-5 shrink-0 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                    onChange={(event) =>
+                      update("acceptTerms", event.target.checked)
+                    }
+                    type="checkbox"
+                    aria-invalid={Boolean(errors.acceptTerms)}
+                    aria-describedby={
+                      errors.acceptTerms ? "register-acceptTerms-error" : undefined
+                    }
+                  />
+                  <span>
+                    Tôi đã đọc và đồng ý với{" "}
+                    <Link
+                      className="font-semibold text-brand-700 underline underline-offset-2"
+                      to="/terms"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Điều khoản sử dụng
+                    </Link>{" "}
+                    và{" "}
+                    <Link
+                      className="font-semibold text-brand-700 underline underline-offset-2"
+                      to="/privacy"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Chính sách bảo mật
+                    </Link>
+                    .
+                  </span>
+                </label>
+                {errorText("acceptTerms")}
+              </div>
+            </fieldset>
+            {formError && (
+              <p
+                className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                role="alert"
+              >
+                {formError}
+              </p>
+            )}
+            <Button
+              className="mt-6 w-full"
+              disabled={submitting}
+              type="submit"
+            >
+              {submitting ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
+              {!submitting && <ArrowRight size={18} />}
+            </Button>
+          </form>
+          <p className="mt-5 text-center text-sm text-slate-600">
+            Đã có tài khoản?{" "}
+            <Link
+              className="font-bold text-brand-700 underline-offset-4 hover:underline"
+              to="/login"
+            >
+              Đăng nhập
+            </Link>
+          </p>
+          <p className="mt-6 text-center text-xs leading-5 text-slate-500">
+            Thông tin tài khoản được gửi qua kết nối bảo mật và mật khẩu chỉ
+            được lưu dưới dạng mã băm.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function LegalInformation() {
+  const location = useLocation();
+  const privacy = location.pathname === "/privacy";
+  const title = privacy ? "Chính sách bảo mật" : "Điều khoản sử dụng";
+  const sections = privacy
+    ? [
+        [
+          "Thông tin được xử lý",
+          "PaceCar cần họ tên, email, số điện thoại và mật khẩu để tạo, bảo vệ tài khoản. Mật khẩu được lưu dưới dạng hash; token phiên đăng nhập chỉ được lưu dưới dạng hash ở máy chủ.",
+        ],
+        [
+          "Cách sử dụng dữ liệu",
+          "Thông tin hồ sơ được dùng để vận hành tài khoản, hỗ trợ đặt xe và bảo vệ các giao dịch trong ứng dụng. Không nhập thông tin thanh toán thật hoặc dữ liệu nhạy cảm vào bản demo.",
+        ],
+        [
+          "Lưu trữ và bảo vệ",
+          "Bản demo lưu dữ liệu trên máy chủ của môi trường đang chạy; thời hạn lưu và tính bền vững phụ thuộc cấu hình triển khai. Không có tích hợp thanh toán thật trong bản demo.",
+        ],
+        [
+          "Quyền riêng tư",
+          "Liên hệ hello@pacecar.vn để hỏi về hồ sơ của bạn. Trước khi mở dịch vụ production, đơn vị vận hành cần xác nhận chính sách này, thời hạn lưu và quy trình yêu cầu dữ liệu phù hợp pháp luật.",
+        ],
+      ]
+    : [
+        [
+          "Tài khoản",
+          "Cung cấp thông tin chính xác, giữ an toàn cho thông tin đăng nhập và thông báo cho PaceCar khi nghi ngờ tài khoản bị truy cập trái phép. Mỗi người chỉ sử dụng vai trò phù hợp với hoạt động của mình.",
+        ],
+        [
+          "Sử dụng nền tảng",
+          "Không giả mạo danh tính, đăng nội dung trái pháp luật, tìm cách vượt quyền truy cập hoặc gây ảnh hưởng đến tính sẵn sàng của dịch vụ. Chủ xe và người thuê cần kiểm tra kỹ thông tin trước khi xác nhận giao dịch.",
+        ],
+        [
+          "Bản demo",
+          "PaceCar hiện là bản demo. Báo giá, đặt xe, hợp đồng điện tử và thanh toán mô phỏng không thay thế xác nhận giao dịch hoặc tư vấn pháp lý; không dùng bản demo để gửi tiền hay thực hiện giao dịch thuê xe thật.",
+        ],
+        [
+          "Cập nhật",
+          "Điều khoản này là thông tin sử dụng cho bản demo và cần được đơn vị vận hành rà soát, cập nhật trước khi cung cấp dịch vụ production. Liên hệ hello@pacecar.vn khi cần hỗ trợ.",
+        ],
+      ];
+  return (
+    <div className="container-app max-w-4xl py-10 sm:py-16">
+      <Link
+        to="/register"
+        className="text-sm font-semibold text-brand-700 hover:underline"
+      >
+        ← Quay lại đăng ký
+      </Link>
+      <p className="mt-8 text-sm font-bold uppercase tracking-wider text-brand-700">
+        PACECAR · BẢN DEMO
+      </p>
+      <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+        {title}
+      </h1>
+      <p className="mt-3 text-sm text-slate-500">
+        Cập nhật: 7 tháng 10, 2026
+      </p>
+      <div className="mt-8 space-y-5">
+        {sections.map(([heading, content]) => (
+          <section className="card p-5 sm:p-7" key={heading}>
+            <h2 className="text-lg font-bold text-slate-900">{heading}</h2>
+            <p className="mt-2 leading-7 text-slate-600">{content}</p>
+          </section>
+        ))}
+      </div>
+      <p className="mt-6 text-xs leading-5 text-slate-500">
+        Tài liệu này mô tả hành vi của bản demo, không phải ý kiến tư vấn pháp
+        lý. Đơn vị vận hành cần phê duyệt nội dung áp dụng cho dịch vụ thực tế.
+      </p>
+    </div>
+  );
+}
+
 function LegacyBooking() {
   const { carId } = useParams(),
     { data: c } = useFetch("/cars/" + carId),
@@ -1858,19 +2425,19 @@ function BookingRow({ b, actions = false, reload }) {
       ) : canViewContract || canViewEvidence || canDispute ? (
         <div className="flex flex-wrap gap-2">
           {canViewContract && (
-            <Link to={`/contract/${b.id}`}>
-              <Button variant="outline">Hợp đồng</Button>
-            </Link>
+            <Button as={Link} to={`/contract/${b.id}`} variant="outline">
+              Hợp đồng
+            </Button>
           )}
           {canViewEvidence && (
-            <Link to={`/evidence/${b.id}`}>
-              <Button variant="outline">Bằng chứng</Button>
-            </Link>
+            <Button as={Link} to={`/evidence/${b.id}`} variant="outline">
+              Bằng chứng
+            </Button>
           )}
           {canDispute && (
-            <Link to={`/disputes/${b.id}`}>
-              <Button variant="outline">Hỗ trợ</Button>
-            </Link>
+            <Button as={Link} to={`/disputes/${b.id}`} variant="outline">
+              Hỗ trợ
+            </Button>
           )}
         </div>
       ) : null}
@@ -1969,9 +2536,9 @@ function LegacyOwnerDashboard() {
           title={`Xin chào, ${data.user.name}`}
           desc="Theo dõi đội xe, doanh thu và yêu cầu thuê mới."
         />
-        <Link to="/owner/cars/new">
-          <Button>+ Đăng xe mới</Button>
-        </Link>
+        <Button as={Link} to="/owner/cars/new">
+          + Đăng xe mới
+        </Button>
       </div>
       <BackendSync at={data.generatedAt} onRefresh={reload} />
       <div id="finance" className="grid gap-5 md:grid-cols-4">
@@ -2022,7 +2589,7 @@ function LegacyOwnerDashboard() {
                   className="mt-3 rounded-xl bg-white/70 p-3 text-sm"
                   key={alert.id}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <b>{alert.type}</b>
                     <StatusBadge status={alert.status} />
                   </div>
@@ -2041,7 +2608,7 @@ function LegacyOwnerDashboard() {
               {data.calendar?.length ? (
                 data.calendar.slice(0, 5).map((item) => (
                   <div className="rounded-xl bg-slate-50 p-3" key={item.id}>
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
                       <b className="text-sm">{item.carName}</b>
                       <StatusBadge status={item.status} />
                     </div>
@@ -2723,9 +3290,13 @@ export function Evidence() {
         {["Ongoing", "Check-out Review", "Dispute"].includes(
           booking.status,
         ) && (
-          <Link to={`/disputes/${bookingId}`}>
-            <Button variant="danger">Mở trung tâm tranh chấp</Button>
-          </Link>
+          <Button
+            as={Link}
+            to={`/disputes/${bookingId}`}
+            variant="danger"
+          >
+            Mở trung tâm tranh chấp
+          </Button>
         )}
       </section>
     </div>
@@ -2945,9 +3516,9 @@ export function NotFound() {
     <div className="container-app py-32 text-center">
       <p className="text-7xl font-extrabold text-brand-100">404</p>
       <h1 className="mt-4 text-2xl font-bold">Không tìm thấy trang</h1>
-      <Link to="/">
-        <Button className="mt-6">Về trang chủ</Button>
-      </Link>
+      <Button as={Link} to="/" className="mt-6">
+        Về trang chủ
+      </Button>
     </div>
   );
 }

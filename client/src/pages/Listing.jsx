@@ -139,6 +139,63 @@ function Field({ label, required, children, hint }) {
   );
 }
 
+function validateListingStep(form, step) {
+  if (step === 0) {
+    const errors = [];
+    for (const [key, label] of [
+      ["name", "Tên hiển thị"],
+      ["brand", "Hãng xe"],
+      ["model", "Dòng xe"],
+      ["licensePlate", "Biển số"],
+      ["location", "Khu vực giao xe"],
+    ])
+      if (!String(form[key] || "").trim()) errors.push(`Vui lòng nhập ${label}`);
+    if (
+      !Number.isInteger(Number(form.year)) ||
+      Number(form.year) < 1990 ||
+      Number(form.year) > new Date().getFullYear() + 1
+    )
+      errors.push("Năm sản xuất không hợp lệ");
+    if (String(form.description || "").trim().length < 20)
+      errors.push("Mô tả xe cần ít nhất 20 ký tự");
+    return errors;
+  }
+  if (step === 1 && !form.selfDriveAvailable && !form.withDriverAvailable)
+    return ["Chọn ít nhất một hình thức cho thuê"];
+  if (step === 2) {
+    const errors = [];
+    if (!Number.isFinite(Number(form.pricePerDay)) || form.pricePerDay < 100000)
+      errors.push("Giá thuê tối thiểu là 100.000đ/ngày");
+    if (!Number.isFinite(Number(form.deposit)) || form.deposit < 0)
+      errors.push("Tiền cọc không hợp lệ");
+    if (
+      !Number.isInteger(Number(form.minRentalDays)) ||
+      !Number.isInteger(Number(form.maxRentalDays)) ||
+      Number(form.minRentalDays) < 1 ||
+      Number(form.maxRentalDays) < Number(form.minRentalDays)
+    )
+      errors.push("Khoảng ngày thuê không hợp lệ");
+    if (
+      form.deliveryOptions.ownerDelivery &&
+      (!Number.isFinite(Number(form.deliveryOptions.deliveryFee)) ||
+        Number(form.deliveryOptions.deliveryFee) < 0)
+    )
+      errors.push("Phí giao xe không hợp lệ");
+    return errors;
+  }
+  if (step === 3) {
+    const errors = [];
+    if (form.photos.length < 3) errors.push("Cần tải lên ít nhất 3 ảnh xe");
+    if (form.photos.length > 10) errors.push("Chỉ được tải lên tối đa 10 ảnh");
+    if (!form.documents.some((document) => document.type === "registration"))
+      errors.push("Cần tải lên đăng ký xe");
+    if (!form.documents.some((document) => document.type === "insurance"))
+      errors.push("Cần tải lên bảo hiểm xe");
+    return errors;
+  }
+  return [];
+}
+
 export function CarListingWizard() {
   const { id } = useParams(),
     nav = useNavigate(),
@@ -184,22 +241,27 @@ export function CarListingWizard() {
       localStorage.setItem("pacecar-listing-draft", JSON.stringify(form));
   }, [form, id]);
   const locked = form.listingStatus === "Pending Review";
+  function goToStep(target) {
+    for (let current = 0; current < target; current += 1) {
+      const validationErrors = validateListingStep(form, current);
+      if (validationErrors.length) {
+        setStep(current);
+        setErrors(validationErrors);
+        return;
+      }
+    }
+    setErrors([]);
+    setStep(target);
+  }
   const complete = useMemo(() => {
-    const checks = [
-      form.name,
-      form.brand,
-      form.model,
-      form.year,
-      form.licensePlate,
-      form.location,
-      form.description,
-      form.pricePerDay,
-      form.deposit,
-      form.photos.length >= 3,
-      form.documents.some((d) => d.type === "registration"),
-      form.documents.some((d) => d.type === "insurance"),
-    ];
-    return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+    const firstIncompleteStep = steps.findIndex((_, index) =>
+      validateListingStep(form, index).length,
+    );
+    return Math.round(
+      ((firstIncompleteStep < 0 ? steps.length : firstIncompleteStep) /
+        steps.length) *
+        100,
+    );
   }, [form]);
   const set = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
   async function saveDraft(silent = false) {
@@ -327,7 +389,7 @@ export function CarListingWizard() {
         {steps.map((name, i) => (
           <button
             disabled={locked}
-            onClick={() => setStep(i)}
+            onClick={() => goToStep(i)}
             className="flex min-w-[150px] items-center"
             key={name}
           >
@@ -832,7 +894,10 @@ export function CarListingWizard() {
         )}
       </fieldset>
       {errors.length > 0 && (
-        <div className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div
+          className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+          role="alert"
+        >
           <b className="flex items-center gap-2">
             <AlertCircle size={18} /> Cần bổ sung
           </b>
@@ -861,7 +926,7 @@ export function CarListingWizard() {
             {saving ? "Đang lưu..." : "Lưu nháp"}
           </Button>
           {step < steps.length - 1 ? (
-            <Button disabled={locked} onClick={() => setStep(step + 1)}>
+            <Button disabled={locked} onClick={() => goToStep(step + 1)}>
               Tiếp tục <ArrowRight size={17} />
             </Button>
           ) : (
@@ -927,11 +992,9 @@ export function OwnerCarsPage() {
           title="Xe và tin đăng của tôi"
           desc="Quản lý toàn bộ vòng đời tin: nháp, kiểm duyệt, công khai và tạm dừng."
         />
-        <Link to="/owner/cars/new">
-          <Button>
-            <Plus size={18} /> Đăng xe mới
-          </Button>
-        </Link>
+        <Button as={Link} to="/owner/cars/new">
+          <Plus size={18} /> Đăng xe mới
+        </Button>
       </div>
       <div className="card mb-6 flex flex-wrap gap-2 p-3">
         {["", "Draft", "Pending Review", "Published", "Paused", "Rejected"].map(
@@ -986,17 +1049,23 @@ export function OwnerCarsPage() {
               </div>
               <div className="flex flex-wrap gap-2 border-t bg-slate-50 p-4">
                 {["Draft", "Rejected"].includes(car.listingStatus) && (
-                  <Link to={`/owner/cars/${car.id}/edit`}>
-                    <Button variant="outline">Chỉnh sửa</Button>
-                  </Link>
+                  <Button
+                    as={Link}
+                    to={`/owner/cars/${car.id}/edit`}
+                    variant="outline"
+                  >
+                    Chỉnh sửa
+                  </Button>
                 )}
                 {car.listingStatus === "Published" && (
                   <>
-                    <Link to={`/cars/${car.id}`}>
-                      <Button variant="outline">
-                        <Eye size={16} /> Xem công khai
-                      </Button>
-                    </Link>
+                    <Button
+                      as={Link}
+                      to={`/cars/${car.id}`}
+                      variant="outline"
+                    >
+                      <Eye size={16} /> Xem công khai
+                    </Button>
                     <Button
                       variant="secondary"
                       onClick={() => setConfirm({ car, action: "pause" })}
@@ -1007,9 +1076,13 @@ export function OwnerCarsPage() {
                 )}
                 {car.listingStatus === "Paused" && (
                   <>
-                    <Link to={`/owner/cars/${car.id}/edit`}>
-                      <Button variant="outline">Chỉnh sửa</Button>
-                    </Link>
+                    <Button
+                      as={Link}
+                      to={`/owner/cars/${car.id}/edit`}
+                      variant="outline"
+                    >
+                      Chỉnh sửa
+                    </Button>
                     <Button onClick={() => status(car, "Pending Review")}>
                       <Send size={16} /> Gửi duyệt lại
                     </Button>

@@ -35,25 +35,26 @@ export function Button({
   children,
   variant = "primary",
   className = "",
+  as: Element = "button",
   ...p
 }) {
   const v = {
-    primary: "bg-brand-600 text-white hover:bg-brand-700",
+    primary: "bg-brand-600 text-white shadow-sm hover:bg-brand-700 hover:shadow-md",
     secondary: "bg-brand-50 text-brand-700 hover:bg-brand-100",
     light: "bg-white text-brand-700 hover:bg-blue-50",
     "on-dark":
-      "border border-white/30 bg-white/10 text-white hover:bg-white/20",
+      "border border-white/25 bg-white/5 text-white hover:border-white/45 hover:bg-white/10",
     outline:
       "border border-slate-300 bg-white hover:bg-slate-50 text-slate-700",
     danger: "bg-red-50 text-red-700 hover:bg-red-100",
   };
   return (
-    <button
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-semibold transition disabled:opacity-50 ${v[variant]} ${className}`}
+    <Element
+      className={`btn-motion inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-semibold ${v[variant]} focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-signal-100 focus-visible:ring-offset-2 disabled:opacity-50 ${className}`}
       {...p}
     >
       {children}
-    </button>
+    </Element>
   );
 }
 export function TrustScoreBadge({ score, large = false }) {
@@ -137,7 +138,7 @@ export function CarCard({ car, onRemoveFavorite, removing = false }) {
     trustScore !== "" &&
     Number.isFinite(Number(trustScore));
   return (
-    <article className="card group overflow-hidden">
+    <article className="card interactive-card group overflow-hidden">
       <div className="relative h-52 overflow-hidden">
         <img
           src={
@@ -167,15 +168,15 @@ export function CarCard({ car, onRemoveFavorite, removing = false }) {
         )}
       </div>
       <div className="p-5">
-        <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="mb-2 min-w-0">
           <h3 className="font-bold text-slate-900">{car.name}</h3>
           {car.reviewCount > 0 ? (
-            <span className="flex items-center gap-1 text-sm font-bold">
+            <span className="mt-1 flex items-center gap-1 text-sm font-bold">
               <Star size={14} fill="currentColor" className="text-amber-400" />
               {car.rating} ({car.reviewCount})
             </span>
           ) : (
-            <span className="text-xs font-semibold text-slate-400">
+            <span className="mt-1 block text-xs font-semibold text-slate-400">
               Chưa có đánh giá
             </span>
           )}
@@ -187,8 +188,11 @@ export function CarCard({ car, onRemoveFavorite, removing = false }) {
           {hasTrustScore ? (
             <TrustScoreBadge score={Number(trustScore)} />
           ) : (
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">
-              Trust chưa có dữ liệu
+            <span
+              title="Trust chưa có dữ liệu"
+              className="whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500"
+            >
+              Trust —
             </span>
           )}
           <p>
@@ -225,7 +229,7 @@ export function Skeleton({ className = "" }) {
 }
 export function PageLoading() {
   return (
-    <div className="container-app py-12">
+    <div className="container-app min-w-0 py-12">
       <Skeleton className="h-8 w-56" />
       <Skeleton className="mt-3 h-4 w-96 max-w-full" />
       <div className="mt-8 grid gap-5 md:grid-cols-3">
@@ -562,6 +566,11 @@ export function Navbar() {
         <nav className="hidden items-center gap-7 text-sm font-semibold md:flex">
           <NavLink to="/cars">Tìm xe</NavLink>
           <a href="/#why">Vì sao PaceCar?</a>
+          {!user && (
+            <Link to="/register" className="text-brand-700 hover:text-brand-900">
+              Đăng ký
+            </Link>
+          )}
           <Link to={dash}>{user ? "Bảng điều khiển" : "Đăng nhập"}</Link>
           {user && <NotificationCenter />}
           {user && (
@@ -576,13 +585,13 @@ export function Navbar() {
           )}
           <Link
             to={user?.role === "owner" ? "/owner/cars/new" : "/cars"}
-            className="rounded-xl bg-brand-600 px-4 py-2 text-white"
+            className="btn-motion min-h-11 rounded-xl bg-brand-600 px-4 py-2 text-white shadow-sm hover:bg-brand-700 hover:shadow-md"
           >
             {user?.role === "owner" ? "Đăng xe cho thuê" : "Thuê xe ngay"}
           </Link>
         </nav>
         <button
-          className="md:hidden"
+          className="btn-motion grid h-11 w-11 place-items-center rounded-xl text-slate-700 hover:bg-slate-100 md:hidden"
           onClick={() => setOpen(!open)}
           aria-label={open ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
           aria-expanded={open}
@@ -615,6 +624,15 @@ export function Navbar() {
             >
               {user ? "Bảng điều khiển" : "Đăng nhập"}
             </Link>
+            {!user && (
+              <Link
+                to="/register"
+                onClick={closeMenu}
+                className="rounded-xl px-3 py-3 text-brand-700 hover:bg-brand-50"
+              >
+                Tạo tài khoản PaceCar
+              </Link>
+            )}
             {user && (
               <>
                 <div className="flex items-center justify-between rounded-xl px-3 py-2 hover:bg-slate-50">
@@ -639,7 +657,7 @@ export function Navbar() {
             <Link
               to={user?.role === "owner" ? "/owner/cars/new" : "/cars"}
               onClick={closeMenu}
-              className="mt-2 rounded-xl bg-brand-600 px-4 py-3 text-center text-white"
+              className="btn-motion mt-2 min-h-11 rounded-xl bg-brand-600 px-4 py-3 text-center text-white"
             >
               {user?.role === "owner" ? "Đăng xe cho thuê" : "Thuê xe ngay"}
             </Link>
@@ -809,8 +827,16 @@ export function Footer() {
 export function Layout({ children }) {
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only z-[100] rounded-lg bg-white p-3 font-bold text-brand-700 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        Bỏ qua điều hướng, đến nội dung chính
+      </a>
       <Navbar />
-      <main>{children}</main>
+      <main id="main-content" tabIndex={-1}>
+        {children}
+      </main>
       <Footer />
     </>
   );

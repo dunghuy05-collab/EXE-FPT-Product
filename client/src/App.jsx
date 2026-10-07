@@ -20,6 +20,8 @@ import {
   Cars,
   CarDetail,
   Login,
+  Register,
+  LegalInformation,
   Booking,
   RenterDashboard,
   OwnerDashboard,
@@ -50,6 +52,9 @@ export default function App() {
           <Route path="/cars" element={<Cars />} />
           <Route path="/cars/:id" element={<CarDetail />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/terms" element={<LegalInformation />} />
+          <Route path="/privacy" element={<LegalInformation />} />
           <Route path="/booking/:carId" element={<Booking />} />
           <Route
             path="/dashboard/renter"
