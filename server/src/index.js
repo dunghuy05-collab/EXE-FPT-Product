@@ -647,6 +647,7 @@ const bookingTransitions = {
   "Check-out Review": ["Completed", "Dispute"],
   Dispute: ["Completed"],
   Rejected: [],
+  Expired: [],
   Completed: [],
 };
 const contractTermsFor = (booking, car) =>
@@ -1770,7 +1771,7 @@ app.delete("/api/cars/:id", requireRole(["owner", "admin"]), (q, s) => {
     d.bookings.some(
       (b) =>
         b.carId === +q.params.id &&
-        !["Rejected", "Completed"].includes(b.status),
+        !["Rejected", "Expired", "Completed"].includes(b.status),
     )
   )
     return s

@@ -19,6 +19,7 @@ const server = spawn(process.execPath, ["src/index.js"], {
     ...process.env,
     PORT: String(port),
     PACECAR_DB_FILE: dbFile,
+    PACECAR_UPLOAD_DIR: path.join(tempDir, "uploads"),
     CLIENT_ORIGIN: "http://localhost:5173",
   },
   stdio: ["ignore", "pipe", "pipe"],
@@ -28,10 +29,13 @@ server.stdout.on("data", (chunk) => (serverLog += chunk));
 server.stderr.on("data", (chunk) => (serverLog += chunk));
 
 async function request(route, { token, headers, ...options } = {}) {
+  const isForm = options.body instanceof FormData;
   const response = await fetch(base + route, {
     ...options,
     headers: {
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.body && !isForm
+        ? { "Content-Type": "application/json" }
+        : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
@@ -68,6 +72,48 @@ try {
   const owner = await login("owner@pacecar.vn");
   const unrelatedOwner = await login("tung@pacecar.vn");
   const admin = await login("admin@pacecar.vn");
+
+  const reconciledBookings = await request("/bookings", { token: admin });
+  assert.equal(
+    reconciledBookings.body.find((item) => item.id === 1).status,
+    "Expired",
+  );
+  assert.equal(
+    reconciledBookings.body.find((item) => item.id === 6).status,
+    "Check-out Review",
+  );
+  const expiredAccept = await request("/bookings/1/status", {
+    method: "PUT",
+    token: owner,
+    body: JSON.stringify({ status: "Accepted" }),
+  });
+  assert.equal(expiredAccept.status, 409);
+  const reconciliationTimeline = await request("/bookings/1/timeline", {
+    token: owner,
+  });
+  assert.ok(
+    reconciliationTimeline.body.some(
+      (item) => item.action === "STATUS_AUTO_UPDATED",
+    ),
+  );
+
+  const forbiddenRiskAlerts = await request("/risk-alerts", { token: renter });
+  assert.equal(forbiddenRiskAlerts.status, 403);
+  const ownerRiskAlerts = await request("/risk-alerts", { token: owner });
+  assert.equal(ownerRiskAlerts.status, 200);
+  assert.ok(ownerRiskAlerts.body.every((item) => item.ownerId === 4));
+  const acknowledgedAlert = await request("/risk-alerts/1/status", {
+    method: "PUT",
+    token: owner,
+    body: JSON.stringify({ status: "Acknowledged" }),
+  });
+  assert.equal(acknowledgedAlert.status, 200);
+  const resolvedAlert = await request("/risk-alerts/2/status", {
+    method: "PUT",
+    token: admin,
+    body: JSON.stringify({ status: "Resolved" }),
+  });
+  assert.equal(resolvedAlert.status, 200);
 
   const registrationInput = {
     name: "QA Renter",
@@ -109,7 +155,11 @@ try {
     method: "POST",
     body: JSON.stringify(registrationInput),
   });
-  assert.equal(registeredRenter.status, 201, JSON.stringify(registeredRenter.body));
+  assert.equal(
+    registeredRenter.status,
+    201,
+    JSON.stringify(registeredRenter.body),
+  );
   assert.equal(registeredRenter.body.role, "renter");
   assert.equal(registeredRenter.body.email, registrationInput.email);
   assert.equal(typeof registeredRenter.body.token, "string");
@@ -120,7 +170,10 @@ try {
   const storedRegisteredUser = persistedRegistration.users.find(
     (user) => user.id === registeredRenter.body.id,
   );
-  assert.notEqual(storedRegisteredUser.passwordHash, registrationInput.password);
+  assert.notEqual(
+    storedRegisteredUser.passwordHash,
+    registrationInput.password,
+  );
   assert.equal(
     storedRegisteredUser.consents.termsVersion,
     "pacecar-demo-2026-10-07",
@@ -138,14 +191,23 @@ try {
     { token: registeredRenter.body.token },
   );
   assert.equal(registeredProfile.status, 200);
+  const updatedProfile = await request(`/users/${registeredRenter.body.id}`, {
+    method: "PUT",
+    token: registeredRenter.body.token,
+    body: JSON.stringify({ name: "QA Renter Updated", phone: "0912345678" }),
+  });
+  assert.equal(updatedProfile.status, 200);
+  assert.equal(updatedProfile.body.name, "QA Renter Updated");
   const registeredLoginToken = await login(
     registrationInput.email,
     registrationInput.password,
   );
   assert.equal(
-    (await request(`/users/${registeredRenter.body.id}`, {
-      token: registeredLoginToken,
-    })).status,
+    (
+      await request(`/users/${registeredRenter.body.id}`, {
+        token: registeredLoginToken,
+      })
+    ).status,
     200,
   );
 
@@ -530,6 +592,175 @@ try {
   assert.equal(ownerSign.body.status, "Signed");
   assert.equal(ownerSign.body.booking.status, "Contract Signed");
 
+  const evidenceUpload = new FormData();
+  evidenceUpload.append(
+    "files",
+    new Blob([Buffer.from("89504e470d0a1a0a", "hex")], { type: "image/png" }),
+    "checkout.png",
+  );
+  evidenceUpload.append("bookingId", "6");
+  const uploadedEvidence = await request("/uploads/evidence", {
+    method: "POST",
+    token: renter,
+    body: evidenceUpload,
+  });
+  assert.equal(
+    uploadedEvidence.status,
+    201,
+    JSON.stringify(uploadedEvidence.body),
+  );
+  const checkoutEvidence = await request("/evidence", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({
+      bookingId: 6,
+      phase: "checkout",
+      photos: [uploadedEvidence.body.files[0].id],
+      fuel: 60,
+      odometer: 25000,
+      notes: "QA checkout evidence",
+    }),
+  });
+  assert.ok([200, 201].includes(checkoutEvidence.status));
+  const openedDispute = await request("/disputes", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({
+      bookingId: 6,
+      reason: "QA workflow verification",
+      description: "Isolated smoke-test dispute",
+      evidence: [uploadedEvidence.body.files[0].id],
+    }),
+  });
+  assert.equal(openedDispute.status, 201, JSON.stringify(openedDispute.body));
+  const resolvedDispute = await request(
+    `/disputes/${openedDispute.body.id}/status`,
+    {
+      method: "PUT",
+      token: admin,
+      body: JSON.stringify({
+        status: "Resolved",
+        decision: "Resolved in isolated QA data",
+      }),
+    },
+  );
+  assert.equal(resolvedDispute.status, 200);
+  const emptyReview = await request("/reviews", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({ bookingId: 6, rating: 5, comment: "" }),
+  });
+  assert.equal(emptyReview.status, 400);
+  const submittedReview = await request("/reviews", {
+    method: "POST",
+    token: renter,
+    body: JSON.stringify({
+      bookingId: 6,
+      rating: 5,
+      comment: "QA verified completed-trip review workflow",
+    }),
+  });
+  assert.equal(
+    submittedReview.status,
+    201,
+    JSON.stringify(submittedReview.body),
+  );
+
+  const documentUpload = new FormData();
+  documentUpload.append(
+    "files",
+    new Blob([Buffer.from("%PDF-1.4 QA registration")], {
+      type: "application/pdf",
+    }),
+    "registration.pdf",
+  );
+  documentUpload.append(
+    "files",
+    new Blob([Buffer.from("%PDF-1.4 QA insurance")], {
+      type: "application/pdf",
+    }),
+    "insurance.pdf",
+  );
+  const uploadedDocuments = await request("/uploads/documents", {
+    method: "POST",
+    token: owner,
+    body: documentUpload,
+  });
+  assert.equal(
+    uploadedDocuments.status,
+    201,
+    JSON.stringify(uploadedDocuments.body),
+  );
+  const uploadedCarPhotos = new FormData();
+  for (const name of ["front.png", "side.png", "rear.png"])
+    uploadedCarPhotos.append(
+      "files",
+      new Blob([Buffer.from("89504e470d0a1a0a", "hex")], { type: "image/png" }),
+      name,
+    );
+  const carPhotos = await request("/uploads/cars", {
+    method: "POST",
+    token: owner,
+    body: uploadedCarPhotos,
+  });
+  assert.equal(carPhotos.status, 201, JSON.stringify(carPhotos.body));
+  const submittedCar = await request("/cars", {
+    method: "POST",
+    token: owner,
+    body: JSON.stringify({
+      name: "QA Test Car 2026",
+      brand: "QA",
+      model: "Test Car",
+      year: 2026,
+      licensePlate: "30A-QA123",
+      location: "Hà Nội",
+      seats: 5,
+      transmission: "Automatic",
+      fuel: "Petrol",
+      type: "Sedan",
+      pricePerDay: 700000,
+      deposit: 5000000,
+      description:
+        "A complete isolated listing used for QA workflow verification.",
+      selfDriveAvailable: true,
+      withDriverAvailable: false,
+      minRentalDays: 1,
+      maxRentalDays: 30,
+      photos: carPhotos.body.files.map((file) => file.url),
+      documents: [
+        { type: "registration", assetId: uploadedDocuments.body.files[0].id },
+        { type: "insurance", assetId: uploadedDocuments.body.files[1].id },
+      ],
+      rules: { mileageLimit: 300, lateFeePerHour: 120000 },
+      deliveryOptions: {
+        ownerDelivery: false,
+        pickupAtCar: true,
+        deliveryFee: 0,
+      },
+      submitForReview: true,
+    }),
+  });
+  assert.equal(submittedCar.status, 201, JSON.stringify(submittedCar.body));
+  assert.equal(submittedCar.body.listingStatus, "Pending Review");
+  const approvedCar = await request(
+    `/cars/${submittedCar.body.id}/listing-status`,
+    {
+      method: "PUT",
+      token: admin,
+      body: JSON.stringify({ status: "Published" }),
+    },
+  );
+  assert.equal(approvedCar.status, 200, JSON.stringify(approvedCar.body));
+  const pausedCar = await request(
+    `/cars/${submittedCar.body.id}/listing-status`,
+    {
+      method: "PUT",
+      token: owner,
+      body: JSON.stringify({ status: "Paused" }),
+    },
+  );
+  assert.equal(pausedCar.status, 200, JSON.stringify(pausedCar.body));
+
   const favorite = await request("/favorites/1", {
     method: "POST",
     token: renter,
@@ -561,7 +792,7 @@ try {
   assert.equal(resume.status, 409);
 
   console.log(
-    "PaceCar API smoke test passed (registration, sessions, same-day journey, booking, contract, authorization, moderation).",
+    "PaceCar API smoke test passed (lifecycle reconciliation, authorization, registration, profile, uploads, listings, promotions, booking, payment, contract, evidence, disputes, reviews, and risk alerts).",
   );
 } finally {
   if (server.exitCode === null) {

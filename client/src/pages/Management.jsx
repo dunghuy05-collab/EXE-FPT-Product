@@ -192,6 +192,7 @@ export function MyBookings() {
           "Ongoing",
           "Completed",
           "Rejected",
+          "Expired",
           "Dispute",
         ].map((x) => (
           <button

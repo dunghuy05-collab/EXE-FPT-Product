@@ -29,6 +29,77 @@ const migrateLegacyPasswords = (data) => {
   return changed;
 };
 
+const bookingDate = (value, endOfDay = false) => {
+  if (typeof value !== "string") return new Date(value);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value))
+    return new Date(`${value}T${endOfDay ? "23:59:59.999" : "00:00:00"}+07:00`);
+  return new Date(value);
+};
+
+const reconcileBookingStatuses = (data, now = new Date()) => {
+  let changed = false;
+  const nextId = (items) =>
+    Math.max(0, ...items.map((item) => Number(item.id) || 0)) + 1;
+
+  for (const booking of data.bookings || []) {
+    const start = bookingDate(booking.startDate);
+    const end = bookingDate(booking.endDate, true);
+    let nextStatus = null;
+    let reason = null;
+
+    if (
+      ["Pending", "Accepted", "Deposit Required"].includes(booking.status) &&
+      Number.isFinite(start.getTime()) &&
+      start < now
+    ) {
+      nextStatus = "Expired";
+      reason = "Booking chưa sẵn sàng trước thời điểm nhận xe";
+    } else if (
+      ["Contract Signed", "Ready for Check-in"].includes(booking.status) &&
+      Number.isFinite(end.getTime()) &&
+      end < now
+    ) {
+      nextStatus = "Expired";
+      reason = "Thời gian thuê đã kết thúc nhưng chưa check-in";
+    } else if (
+      booking.status === "Ongoing" &&
+      Number.isFinite(end.getTime()) &&
+      end < now
+    ) {
+      nextStatus = "Check-out Review";
+      reason = "Thời gian thuê đã kết thúc; cần đối soát trả xe";
+    }
+
+    if (!nextStatus) continue;
+    const previous = booking.status;
+    const changedAt = now.toISOString();
+    booking.status = nextStatus;
+    booking.statusReason = reason;
+    booking.autoUpdatedAt = changedAt;
+    data.auditLogs.push({
+      id: nextId(data.auditLogs),
+      entity: "booking",
+      entityId: booking.id,
+      action: "STATUS_AUTO_UPDATED",
+      actorId: null,
+      detail: `${previous} -> ${nextStatus}: ${reason}`,
+      createdAt: changedAt,
+    });
+    for (const userId of new Set([booking.renterId, booking.ownerId]))
+      data.notifications.push({
+        id: nextId(data.notifications),
+        userId,
+        title: "Booking được cập nhật tự động",
+        message: `Booking #PC${booking.id} đã tự chuyển từ ${previous} sang ${nextStatus}.`,
+        type: "booking",
+        read: false,
+        createdAt: changedAt,
+      });
+    changed = true;
+  }
+  return changed;
+};
+
 export function read() {
   if (!fs.existsSync(file))
     fs.writeFileSync(file, JSON.stringify(seed, null, 2));
@@ -64,6 +135,7 @@ export function read() {
     },
   ];
   data.auditLogs ||= [];
+  if (reconcileBookingStatuses(data)) changed = true;
   data.sessions ||= [];
   const storedSessionCount = data.sessions.length;
   const activeSessions = data.sessions

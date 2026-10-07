@@ -38,7 +38,10 @@ function RequireRole({ role, children }) {
     const next = `${location.pathname}${location.search}${location.hash}`;
     return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
   }
-  if (role && user.role !== role)
+  const allowed = Array.isArray(role)
+    ? role.includes(user.role)
+    : user.role === role;
+  if (role && !allowed)
     return <Navigate to={`/dashboard/${user.role}`} replace />;
   return children;
 }
@@ -139,7 +142,7 @@ export default function App() {
           <Route
             path="/risk-alerts"
             element={
-              <RequireRole>
+              <RequireRole role={["owner", "admin"]}>
                 <RiskAlerts />
               </RequireRole>
             }

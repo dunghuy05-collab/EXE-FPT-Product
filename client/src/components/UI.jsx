@@ -114,6 +114,7 @@ export function StatusBadge({ status }) {
     "Contract Signed": "bg-indigo-50 text-indigo-700",
     "Ready for Check-in": "bg-teal-50 text-teal-700",
     Rejected: "bg-red-50 text-red-700",
+    Expired: "bg-slate-100 text-slate-700",
     Ongoing: "bg-violet-50 text-violet-700",
     "Check-out Review": "bg-fuchsia-50 text-fuchsia-700",
     Completed: "bg-emerald-50 text-emerald-700",
