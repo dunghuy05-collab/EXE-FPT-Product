@@ -245,13 +245,22 @@ try {
   assert.equal(revokedRegistrationSession.status, 401);
 
   const publicCars = await request("/cars");
+  assert.ok(publicCars.body.length >= 20);
+  assert.ok(
+    ["Sedan", "SUV", "MPV", "Hatchback", "Pickup", "Van"].every((type) =>
+      publicCars.body.some((car) => car.type === type),
+    ),
+  );
+  assert.ok(
+    publicCars.body.every((car) => car.imageUrl.startsWith("https://")),
+  );
   const carWithoutReviews = publicCars.body.find((car) => car.id === 1);
   assert.equal(carWithoutReviews.reviewCount, 0);
   assert.equal(carWithoutReviews.rating, null);
   const carWithReviews = publicCars.body.find((car) => car.id === 2);
   assert.equal(carWithReviews.reviewCount, 1);
   assert.equal(carWithReviews.rating, 5);
-  const searchResults = await request("/search/cars");
+  const searchResults = await request("/search/cars?limit=24");
   const unratedSearchCar = searchResults.body.items.find((car) => car.id === 1);
   assert.equal(unratedSearchCar.reviewCount, 0);
   assert.equal(unratedSearchCar.rating, null);
@@ -410,7 +419,7 @@ try {
     { token: renter },
   );
   assert.equal(sameDayQuoteDetail.body.destination, "Hải Phòng");
-  assert.match(sameDayQuoteDetail.body.pickupLocation, /Hòa Lạc/);
+  assert.match(sameDayQuoteDetail.body.pickupLocation, /Cầu Giấy/);
 
   const limitedPromotion = await request("/admin/promotions", {
     method: "POST",

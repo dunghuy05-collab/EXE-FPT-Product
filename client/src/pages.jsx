@@ -613,6 +613,10 @@ function LegacyCars() {
           <option>Cầu Giấy</option>
           <option>Mỹ Đình</option>
           <option>Hòa Lạc</option>
+          <option>Tây Hồ</option>
+          <option>Long Biên</option>
+          <option>Gia Lâm</option>
+          <option>Nội Bài</option>
         </select>
         <select
           className="input"
@@ -622,6 +626,10 @@ function LegacyCars() {
           <option value="">Mọi loại xe</option>
           <option>Sedan</option>
           <option>SUV</option>
+          <option>MPV</option>
+          <option>Hatchback</option>
+          <option>Pickup</option>
+          <option>Van</option>
         </select>
         <select className="input">
           <option>Tự lái hoặc có tài xế</option>
@@ -805,6 +813,8 @@ export function Cars() {
                   <option>SUV</option>
                   <option>MPV</option>
                   <option>Hatchback</option>
+                  <option>Pickup</option>
+                  <option>Van</option>
                 </select>
               </Filter>
               <Filter label="Số chỗ tối thiểu">
@@ -817,6 +827,7 @@ export function Cars() {
                   <option value="4">4 chỗ</option>
                   <option value="5">5 chỗ</option>
                   <option value="7">7 chỗ</option>
+                  <option value="8">8 chỗ</option>
                 </select>
               </Filter>
               <Filter label="Hộp số">
@@ -1355,6 +1366,19 @@ export function CarDetail() {
           </div>
         )}
       </div>
+      {car.imageSourceUrl && (
+        <p className="mt-2 text-right text-xs text-slate-400">
+          Ảnh minh họa:{" "}
+          <a
+            href={car.imageSourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold underline decoration-slate-300 underline-offset-2 hover:text-brand-600"
+          >
+            {car.imageCredit || "Nguồn ảnh"}
+          </a>
+        </p>
+      )}
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
         <div className="min-w-0 space-y-7">
           <section>

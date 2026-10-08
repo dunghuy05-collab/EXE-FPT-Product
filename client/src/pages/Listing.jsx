@@ -517,7 +517,7 @@ export function CarListingWizard() {
                 <option>MPV</option>
                 <option>Hatchback</option>
                 <option>Pickup</option>
-                <option>Electric</option>
+                <option>Van</option>
               </select>
             </Field>
             <Field label="Số chỗ">

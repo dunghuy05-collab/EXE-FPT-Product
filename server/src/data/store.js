@@ -283,7 +283,71 @@ export function read() {
     "Cầu Giấy, Hà Nội": "Công viên Cầu Giấy",
     "Mỹ Đình, Hà Nội": "Bến xe Mỹ Đình",
     "Nội thành Hà Nội": "Công viên Thống Nhất, Hai Bà Trưng",
+    "Tây Hồ, Hà Nội": "Lotte Mall Tây Hồ",
+    "Long Biên, Hà Nội": "Aeon Mall Long Biên",
+    "Hai Bà Trưng, Hà Nội": "Công viên Thống Nhất, Hai Bà Trưng",
+    "Thanh Xuân, Hà Nội": "Royal City, Thanh Xuân",
+    "Gia Lâm, Hà Nội": "Vincom Mega Mall Ocean Park",
+    "Hoàn Kiếm, Hà Nội": "Nhà hát Lớn Hà Nội",
+    "Nội Bài, Hà Nội": "Sảnh đến T1, sân bay Nội Bài",
   };
+  // Keep the curated demo catalog current on persistent Render disks while
+  // preserving bookings and any owner-created listings.
+  const catalogFields = [
+    "catalogKey",
+    "name",
+    "brand",
+    "model",
+    "year",
+    "location",
+    "handoverPoint",
+    "seats",
+    "transmission",
+    "fuel",
+    "type",
+    "pricePerDay",
+    "deposit",
+    "withDriverAvailable",
+    "selfDriveAvailable",
+    "imageUrl",
+    "imageSourceUrl",
+    "imageCredit",
+    "description",
+  ];
+  for (const catalogCar of seed.cars) {
+    let storedCar = data.cars.find(
+      (car) => car.catalogKey === catalogCar.catalogKey,
+    );
+    if (!storedCar && catalogCar.id <= 10) {
+      const legacyCar = data.cars.find((car) => car.id === catalogCar.id);
+      if (legacyCar && [4, 5, 6].includes(legacyCar.ownerId))
+        storedCar = legacyCar;
+    }
+    if (!storedCar) {
+      const idTaken = data.cars.some((car) => car.id === catalogCar.id);
+      const nextId = Math.max(0, ...data.cars.map((car) => car.id)) + 1;
+      data.cars.push({
+        ...structuredClone(catalogCar),
+        id: idTaken ? nextId : catalogCar.id,
+      });
+      changed = true;
+      continue;
+    }
+    for (const field of catalogFields) {
+      if (storedCar[field] !== catalogCar[field]) {
+        storedCar[field] = catalogCar[field];
+        changed = true;
+      }
+    }
+    if (
+      !Array.isArray(storedCar.photos) ||
+      storedCar.photos.length !== 1 ||
+      storedCar.photos[0] !== catalogCar.imageUrl
+    ) {
+      storedCar.photos = [catalogCar.imageUrl];
+      changed = true;
+    }
+  }
   data.cars = data.cars.map((car) => ({
     listingStatus: "Published",
     photos: car.imageUrl ? [car.imageUrl] : [],

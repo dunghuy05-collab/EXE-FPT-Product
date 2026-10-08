@@ -24,6 +24,13 @@ const locations = [
   "Cầu Giấy, Hà Nội",
   "Mỹ Đình, Hà Nội",
   "Hòa Lạc, Hà Nội",
+  "Tây Hồ, Hà Nội",
+  "Long Biên, Hà Nội",
+  "Hai Bà Trưng, Hà Nội",
+  "Thanh Xuân, Hà Nội",
+  "Gia Lâm, Hà Nội",
+  "Hoàn Kiếm, Hà Nội",
+  "Nội Bài, Hà Nội",
 ];
 export default function SearchBar({ compact = false }) {
   const nav = useNavigate(),
