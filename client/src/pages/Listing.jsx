@@ -147,9 +147,10 @@ function validateListingStep(form, step) {
       ["brand", "Hãng xe"],
       ["model", "Dòng xe"],
       ["licensePlate", "Biển số"],
-      ["location", "Khu vực giao xe"],
+      ["location", "điểm bàn giao mặc định"],
     ])
-      if (!String(form[key] || "").trim()) errors.push(`Vui lòng nhập ${label}`);
+      if (!String(form[key] || "").trim())
+        errors.push(`Vui lòng nhập ${label}`);
     if (
       !Number.isInteger(Number(form.year)) ||
       Number(form.year) < 1990 ||
@@ -254,8 +255,8 @@ export function CarListingWizard() {
     setStep(target);
   }
   const complete = useMemo(() => {
-    const firstIncompleteStep = steps.findIndex((_, index) =>
-      validateListingStep(form, index).length,
+    const firstIncompleteStep = steps.findIndex(
+      (_, index) => validateListingStep(form, index).length,
     );
     return Math.round(
       ((firstIncompleteStep < 0 ? steps.length : firstIncompleteStep) /
@@ -477,11 +478,16 @@ export function CarListingWizard() {
                 placeholder="Trắng ngọc trai"
               />
             </Field>
-            <Field label="Khu vực giao xe" required>
+            <Field
+              label="Điểm bàn giao mặc định"
+              hint="Nhập địa chỉ hoặc mốc dễ tìm, ví dụ: Bến xe Yên Nghĩa, Hà Đông, Hà Nội."
+              required
+            >
               <input
                 className="input"
                 value={form.location}
                 onChange={(e) => set("location", e.target.value)}
+                placeholder="Địa chỉ hoặc mốc bàn giao cụ thể"
               />
             </Field>
             <Field label="Mô tả xe" required>
@@ -1059,11 +1065,7 @@ export function OwnerCarsPage() {
                 )}
                 {car.listingStatus === "Published" && (
                   <>
-                    <Button
-                      as={Link}
-                      to={`/cars/${car.id}`}
-                      variant="outline"
-                    >
+                    <Button as={Link} to={`/cars/${car.id}`} variant="outline">
                       <Eye size={16} /> Xem công khai
                     </Button>
                     <Button

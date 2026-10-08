@@ -178,11 +178,16 @@ export function read() {
     },
   ];
   data.pricingPolicy ||= {
-    version: "PC-2026.2",
+    version: "PC-2026.3",
     platformFeeRate: 0.1,
     insurancePerDay: 80000,
     weekendSurchargeRate: 0.15,
     driverFeePerDay: 350000,
+    handoverSupportedFrom: "06:00",
+    handoverSupportedUntil: "22:00",
+    handoverStandardFrom: "08:00",
+    handoverStandardUntil: "20:00",
+    handoverOutsideFee: 100000,
     longRentalDiscounts: [
       { minDays: 7, rate: 0.1 },
       { minDays: 3, rate: 0.05 },
@@ -193,8 +198,21 @@ export function read() {
     data.pricingPolicy.driverFeePerDay = 350000;
     changed = true;
   }
-  if (data.pricingPolicy.version === "PC-2026.1") {
-    data.pricingPolicy.version = "PC-2026.2";
+  const handoverDefaults = {
+    handoverSupportedFrom: "06:00",
+    handoverSupportedUntil: "22:00",
+    handoverStandardFrom: "08:00",
+    handoverStandardUntil: "20:00",
+    handoverOutsideFee: 100000,
+  };
+  for (const [key, value] of Object.entries(handoverDefaults)) {
+    if (data.pricingPolicy[key] == null) {
+      data.pricingPolicy[key] = value;
+      changed = true;
+    }
+  }
+  if (["PC-2026.1", "PC-2026.2"].includes(data.pricingPolicy.version)) {
+    data.pricingPolicy.version = "PC-2026.3";
     changed = true;
   }
   const welcomePromotion = data.promotions.find(
@@ -259,6 +277,13 @@ export function read() {
       createdAt: "2026-07-08T08:30:00.000Z",
     },
   ];
+  const defaultHandoverPoints = {
+    "Hà Đông, Hà Nội": "Bến xe Yên Nghĩa, Hà Đông",
+    "Hòa Lạc, Hà Nội": "Khu công nghệ cao Hòa Lạc",
+    "Cầu Giấy, Hà Nội": "Công viên Cầu Giấy",
+    "Mỹ Đình, Hà Nội": "Bến xe Mỹ Đình",
+    "Nội thành Hà Nội": "Công viên Thống Nhất, Hai Bà Trưng",
+  };
   data.cars = data.cars.map((car) => ({
     listingStatus: "Published",
     photos: car.imageUrl ? [car.imageUrl] : [],
@@ -280,6 +305,8 @@ export function read() {
     instantBooking: false,
     updatedAt: car.updatedAt || "2026-07-01T00:00:00.000Z",
     ...car,
+    handoverPoint:
+      car.handoverPoint || defaultHandoverPoints[car.location] || car.location,
   }));
   data.evidence ||= [];
   for (const evidence of data.evidence) {

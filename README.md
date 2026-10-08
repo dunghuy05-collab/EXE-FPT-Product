@@ -2,6 +2,14 @@
 
 PaceCar là demo full-stack của một marketplace thuê xe mang nhận diện riêng, tập trung vào tìm xe thuận tiện, báo giá minh bạch và kiểm soát rủi ro bằng Trust Score. Trải nghiệm khám phá xe được hoàn thiện theo chuẩn một marketplace thực tế; điểm khác biệt cốt lõi của PaceCar vẫn là xác thực, hợp đồng số và bằng chứng giao nhận.
 
+## Mô hình hoạt động của bản demo
+
+- PaceCar là nền tảng công nghệ kết nối; hợp đồng thuê xe được ký trực tiếp giữa người thuê và chủ xe.
+- Chủ xe quyết định giá thuê và tiền cọc. Người thuê trả phí nền tảng 10% trên tiền thuê sau điều chỉnh; phí này được tách dòng trong báo giá trước khi đặt.
+- PaceCar cung cấp báo giá, hợp đồng số, nhật ký, bằng chứng giao nhận và quy trình hỗ trợ tranh chấp; PaceCar không phải chủ sở hữu hoặc bên trực tiếp cho thuê xe.
+- Giao dịch thực hiện ngoài nền tảng không được áp dụng báo giá, hợp đồng số, bằng chứng và quy trình hỗ trợ của PaceCar.
+- Đây là mô hình demo. Đơn vị vận hành phải rà soát pháp lý, thanh toán, hoàn tiền và trách nhiệm các bên trước khi cung cấp dịch vụ thật.
+
 Ứng dụng dùng React, Vite, Tailwind CSS, Express và cơ sở dữ liệu JSON cục bộ.
 
 ## Chạy dự án
@@ -52,6 +60,7 @@ Các tài khoản trên là dữ liệu seed dành cho demo. Khi đăng nhập, 
 - Chương trình ưu đãi và mã giảm giá được kiểm tra phía server
 - Báo giá có thời hạn, có phiên bản chính sách và breakdown đầy đủ do backend tính
 - Hỗ trợ thuê trong ngày; khoảng 06:00–22:00 được hiển thị là 16 giờ và tính tối thiểu 1 ngày
+- Bàn giao được hỗ trợ từ 06:00–22:00; khung tiêu chuẩn 08:00–20:00, ngoài khung tiêu chuẩn thu 100.000đ cho mỗi lượt nhận hoặc trả
 - Tạo booking an toàn từ `quoteId`, kiểm tra lại lịch trống và chống tạo trùng bằng `Idempotency-Key`
 - Thanh toán tiền cọc mô phỏng có trạng thái, thời điểm, thông báo và audit log để kiểm thử trọn luồng
 - Consent được lưu cùng phiên bản chính sách; timestamp chấp thuận do backend tạo
@@ -117,7 +126,9 @@ Chọn xe và lịch trống
 → Pending hoặc Accepted nếu đủ điều kiện đặt xe nhanh
 ```
 
-Breakdown báo giá hiện gồm giá thuê theo ngày, phụ thu cuối tuần, giảm giá thuê dài ngày, phí tài xế khi có, phí nền tảng, bảo hiểm, giao xe, ưu đãi, tổng thanh toán và tiền cọc. Quote mặc định có hiệu lực 15 phút và lưu `policyVersion` cùng pricing snapshot vào booking để tránh frontend/backend tự tính khác nhau.
+Breakdown báo giá hiện gồm giá thuê theo ngày, phụ thu cuối tuần, giảm giá thuê dài ngày, phí tài xế khi có, phí nền tảng, bảo hiểm, giao xe, phụ phí bàn giao ngoài giờ, ưu đãi, tổng thanh toán và tiền cọc. Quote mặc định có hiệu lực 15 phút và lưu `policyVersion` cùng pricing snapshot vào booking để tránh frontend/backend tự tính khác nhau.
+
+Nhiên liệu không nằm trong giá thuê. Chính sách mặc định là giao đầy – trả đầy; mức nhiên liệu thực tế, ODO và ảnh trước/sau được lưu trong biên bản giao nhận để đối chiếu.
 
 Sau khi chủ xe chấp nhận yêu cầu, hợp đồng được phát hành từ điều khoản cố định của server. Người thuê và chủ xe ký độc lập; booking chỉ chuyển sang `Contract Signed` khi đủ hai chữ ký. Check-in/check-out yêu cầu ảnh riêng tư, mức nhiên liệu và ODO hợp lệ trước khi backend chuyển trạng thái tiếp theo.
 

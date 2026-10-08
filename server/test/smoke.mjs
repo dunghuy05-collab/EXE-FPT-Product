@@ -45,7 +45,9 @@ async function request(route, { token, headers, ...options } = {}) {
 }
 
 async function waitForServer() {
-  for (let attempt = 0; attempt < 50; attempt += 1) {
+  // First-run password migration uses scrypt and can take longer on small CI/
+  // Render-class machines, so give the isolated smoke server enough time.
+  for (let attempt = 0; attempt < 150; attempt += 1) {
     try {
       const health = await request("/health");
       if (health.status === 200) return;
@@ -355,6 +357,11 @@ try {
   );
   assert.equal(pastSearch.status, 400);
 
+  const unsupportedHandoverSearch = await request(
+    "/search/cars?startDate=2027-09-24&startTime=05%3A30&endDate=2027-09-24&endTime=20%3A00",
+  );
+  assert.equal(unsupportedHandoverSearch.status, 422);
+
   const sameDaySearch = await request(
     "/search/cars?location=H%C3%A0%20N%E1%BB%99i&startDate=2027-09-24&startTime=06%3A00&endDate=2027-09-24&endTime=22%3A00&driverOption=self",
   );
@@ -379,6 +386,9 @@ try {
   assert.equal(sameDayQuote.body.days, 1);
   assert.equal(sameDayQuote.body.durationHours, 16);
   assert.equal(sameDayQuote.body.weekendDays, 0);
+  assert.equal(sameDayQuote.body.outsideHoursCount, 2);
+  assert.equal(sameDayQuote.body.outsideHoursFee, 200000);
+  assert.equal(sameDayQuote.body.policyVersion, "PC-2026.3");
 
   const weekendEarlyQuote = await request("/quotes", {
     method: "POST",
@@ -400,6 +410,7 @@ try {
     { token: renter },
   );
   assert.equal(sameDayQuoteDetail.body.destination, "Hải Phòng");
+  assert.match(sameDayQuoteDetail.body.pickupLocation, /Hòa Lạc/);
 
   const limitedPromotion = await request("/admin/promotions", {
     method: "POST",

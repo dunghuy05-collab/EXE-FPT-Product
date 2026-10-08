@@ -47,8 +47,7 @@ const publicUser = (user) =>
   user &&
   Object.fromEntries(
     Object.entries(user).filter(
-      ([key]) =>
-        !["password", "passwordHash", "consents"].includes(key),
+      ([key]) => !["password", "passwordHash", "consents"].includes(key),
     ),
   );
 const publicOwnerSummary = (user) =>
@@ -82,8 +81,10 @@ const publicReviewSummary = (data, carId) => {
     rating: reviews.length
       ? Number(
           (
-            reviews.reduce((total, review) => total + Number(review.rating), 0) /
-            reviews.length
+            reviews.reduce(
+              (total, review) => total + Number(review.rating),
+              0,
+            ) / reviews.length
           ).toFixed(1),
         )
       : null,
@@ -505,7 +506,39 @@ const rentalDateTime = (dateValue, timeValue) =>
   /^([01]\d|2[0-3]):[0-5]\d$/.test(timeValue)
     ? `${dateValue}T${timeValue}:00+07:00`
     : null;
+const timeMinutes = (value) => {
+  const match = String(value || "").match(/T(\d{2}):(\d{2})/);
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+};
+const policyTimeMinutes = (value) => {
+  const match = String(value || "").match(/^(\d{2}):(\d{2})$/);
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+};
+const supportedHandoverTime = (timestamp, policy) => {
+  const value = timeMinutes(timestamp),
+    start = policyTimeMinutes(policy.handoverSupportedFrom),
+    end = policyTimeMinutes(policy.handoverSupportedUntil);
+  return (
+    value != null &&
+    start != null &&
+    end != null &&
+    value >= start &&
+    value <= end
+  );
+};
+const outsideStandardHandover = (timestamp, policy) => {
+  const value = timeMinutes(timestamp),
+    start = policyTimeMinutes(policy.handoverStandardFrom),
+    end = policyTimeMinutes(policy.handoverStandardUntil);
+  return (
+    value != null &&
+    start != null &&
+    end != null &&
+    (value < start || value > end)
+  );
+};
 const validPeriod = (startDate, endDate) => {
+  if (!startDate || !endDate) return false;
   const start = new Date(startDate),
     end = new Date(endDate);
   return (
@@ -576,6 +609,11 @@ const buildQuote = (data, car, input) => {
     input.pickupOption === "delivery"
       ? Number(car.deliveryOptions?.deliveryFee ?? 150000)
       : 0;
+  const outsideHoursCount = [input.startDate, input.endDate].filter(
+      (timestamp) => outsideStandardHandover(timestamp, policy),
+    ).length,
+    outsideHoursFee =
+      outsideHoursCount * Number(policy.handoverOutsideFee || 0);
   let promoDiscount = 0,
     appliedPromotion = null;
   if (input.promoCode) {
@@ -624,6 +662,8 @@ const buildQuote = (data, car, input) => {
     platformFee,
     insuranceFee,
     deliveryFee,
+    outsideHoursCount,
+    outsideHoursFee,
     promoDiscount,
     appliedPromotion,
     deposit: Number(car.deposit),
@@ -632,7 +672,8 @@ const buildQuote = (data, car, input) => {
       rentalAfterDiscount +
         platformFee +
         insuranceFee +
-        deliveryFee -
+        deliveryFee +
+        outsideHoursFee -
         promoDiscount,
     ),
   };
@@ -894,10 +935,7 @@ app.post("/api/auth/register", registerLimiter, (q, s) => {
   else if (name.length > 120)
     fields.name = "Họ tên không được vượt quá 120 ký tự.";
   if (!email) fields.email = "Vui lòng nhập email.";
-  else if (
-    email.length > 254 ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email)
-  )
+  else if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email))
     fields.email = "Email không hợp lệ.";
   if (password.length < 8 || password.length > 128)
     fields.password = "Mật khẩu phải có từ 8 đến 128 ký tự.";
@@ -995,6 +1033,14 @@ app.get("/api/search/cars", (req, res) => {
     return res
       .status(400)
       .json({ message: "Thời gian nhận xe không thể ở trong quá khứ" });
+  if (
+    hasAnyPeriodField &&
+    (!supportedHandoverTime(periodStart, data.pricingPolicy) ||
+      !supportedHandoverTime(periodEnd, data.pricingPolicy))
+  )
+    return res.status(422).json({
+      message: `PaceCar hỗ trợ bàn giao từ ${data.pricingPolicy.handoverSupportedFrom} đến ${data.pricingPolicy.handoverSupportedUntil}`,
+    });
   if (location)
     cars = cars.filter((car) =>
       car.location.toLowerCase().includes(String(location).toLowerCase()),
@@ -1332,6 +1378,13 @@ app.post("/api/quotes", quoteLimiter, (req, res) => {
   };
   if (!validPeriod(quoteInput.startDate, quoteInput.endDate))
     return res.status(400).json({ message: "Thời gian thuê không hợp lệ" });
+  if (
+    !supportedHandoverTime(quoteInput.startDate, data.pricingPolicy) ||
+    !supportedHandoverTime(quoteInput.endDate, data.pricingPolicy)
+  )
+    return res.status(422).json({
+      message: `PaceCar hỗ trợ bàn giao từ ${data.pricingPolicy.handoverSupportedFrom} đến ${data.pricingPolicy.handoverSupportedUntil}`,
+    });
   if (isPastDate(quoteInput.startDate))
     return res
       .status(400)

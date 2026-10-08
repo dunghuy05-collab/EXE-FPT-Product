@@ -2,6 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { CalendarDays, MapPin, Search, UserRound } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, useToast } from "./UI";
+import {
+  HANDOVER_POLICY,
+  validateHandoverTimes,
+} from "../services/rentalPolicy";
 const formatLocalDate = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -88,6 +92,11 @@ export default function SearchBar({ compact = false }) {
       toast.error("Thời gian trả xe phải sau thời gian nhận xe");
       return;
     }
+    const handoverError = validateHandoverTimes(form.startTime, form.endTime);
+    if (handoverError) {
+      toast.error(handoverError);
+      return;
+    }
     const next = compact ? new URLSearchParams(params) : new URLSearchParams();
     Object.entries(form).forEach(([key, value]) =>
       value ? next.set(key, value) : next.delete(key),
@@ -125,7 +134,7 @@ export default function SearchBar({ compact = false }) {
         <label className="relative min-w-0 sm:col-span-2 lg:col-span-1">
           <span className="label">
             <MapPin className="mr-1 inline" size={16} />
-            Địa điểm nhận xe
+            Khu vực nhận xe
           </span>
           <select
             className="input"
@@ -141,6 +150,9 @@ export default function SearchBar({ compact = false }) {
               <option key={location}>{location}</option>
             ))}
           </select>
+          <span className="mt-1 block text-[11px] text-slate-400">
+            Điểm hẹn cụ thể hiển thị trong trang xe
+          </span>
         </label>
         <label className="relative min-w-0 sm:col-span-2 lg:col-span-1">
           <span className="label">
@@ -222,6 +234,12 @@ export default function SearchBar({ compact = false }) {
           Tìm xe
         </Button>
       </div>
+      <p className="mt-3 text-xs leading-5 text-slate-500">
+        Bàn giao hỗ trợ {HANDOVER_POLICY.supportedFrom}–
+        {HANDOVER_POLICY.supportedUntil}. Khung giờ tiêu chuẩn{" "}
+        {HANDOVER_POLICY.standardFrom}–{HANDOVER_POLICY.standardUntil}; ngoài
+        khung giờ này có phụ phí và được hiển thị trước khi đặt.
+      </p>
     </form>
   );
 }
